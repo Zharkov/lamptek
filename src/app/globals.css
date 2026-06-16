@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0b0e14;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--bg);
+  color: #f2f4f8;
+  /* Едва заметное «зарево» вверху страницы — как свет фонаря в ночи */
+  background-image: radial-gradient(60% 40% at 50% -10%, rgba(255, 179, 71, 0.10), transparent 70%);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+@layer components {
+  .container-lt { @apply mx-auto w-full max-w-6xl px-5; }
+
+  .eyebrow { @apply font-mono text-xs uppercase tracking-[0.2em] text-glow; }
+
+  .btn-glow {
+    @apply inline-flex items-center justify-center rounded-md bg-glow px-5 py-3 font-medium text-ink-900 transition;
+    @apply hover:brightness-110 active:brightness-95;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center rounded-md border border-ink-500 px-5 py-3 font-medium text-chalk transition hover:border-glow hover:text-glow;
+  }
+
+  /* Сигнатура: карточка «зажигается» при наведении */
+  .card {
+    @apply rounded-xl border border-ink-600 bg-ink-800 transition duration-300;
+  }
+  .card:hover {
+    @apply border-glow/40;
+    box-shadow: 0 0 0 1px rgba(255, 179, 71, 0.25), 0 12px 50px -12px rgba(255, 179, 71, 0.35);
+    transform: translateY(-2px);
+  }
+
+  .spec-row { @apply flex items-baseline justify-between gap-4 border-b border-ink-600 py-2.5; }
+  .spec-label { @apply text-sm text-muted; }
+  .spec-value { @apply font-mono text-sm text-chalk; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .card, .card:hover { transition: none; transform: none; }
+}
