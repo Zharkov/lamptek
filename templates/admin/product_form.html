@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Редактирование' if p else 'Новый товар' }} — LampTek{% endblock %}
+{% block content %}
+{% set specs = (p.specs_json | fromjson) if p else [] %}
+{% set gallery = (p.gallery_json | fromjson) if p else [] %}
+{% set drawings = (p.drawings_json | fromjson) if p else [] %}
+<div class="container section" style="max-width:760px">
+  <h1 style="font-size:20px">{{ 'Редактирование: ' + p.title if p else 'Новый товар' }}</h1>
+  <form method="post" class="mt24" style="display:grid;gap:18px" id="prod-form">
+    <div><label class="lbl">Название *</label><input class="field" name="title" value="{{ p.title if p else (form.title if form else '') }}"></div>
+    <div class="grid grid--2">
+      <div><label class="lbl">Slug (адрес) *</label><input class="field mono" name="slug" placeholder="lamptek-zenith-200w" value="{{ p.slug if p else (form.slug if form else '') }}"></div>
+      <div><label class="lbl">Категория *</label>
+        <select class="field" name="category_id">
+          <option value="">— выберите —</option>
+          {% for c in cats %}<option value="{{ c.id }}" {{ 'selected' if p and p.category_id==c.id }}>{{ c.title }}</option>{% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="grid grid--2">
+      <div><label class="lbl">Ориентировочная цена, ₽</label><input class="field" type="number" name="price" value="{{ p.price if p and p.price else '' }}"></div>
+      <label class="flex" style="align-self:end;padding-bottom:10px;font-size:14px"><input type="checkbox" name="price_on_request" {{ 'checked' if (p.price_on_request if p else true) }}> Цена по запросу (скрыть число)</label>
+    </div>
+
+    <div>
+      <label class="lbl">Главное фото</label>
+      <input type="hidden" name="main_image" id="main_image" value="{{ p.main_image if p else '' }}">
+      <div class="flex">
+        <div id="main-prev" class="card" style="width:80px;height:80px;overflow:hidden;{{ '' if (p and p.main_image) else 'display:none' }}"><img id="main-img" src="{{ p.main_image if p else '' }}" style="width:100%;height:100%;object-fit:contain"></div>
+        <label class="add-link">Загрузить<input type="file" accept="image/*" class="js-upload" data-target="main" hidden></label>
+      </div>
+    </div>
+
+    <div><label class="lbl">Краткое описание</label><input class="field" name="short_desc" value="{{ p.short_desc if p else '' }}"></div>
+    <div><label class="lbl">Полное описание</label><textarea class="field" name="full_desc" rows="5">{{ p.full_desc if p else '' }}</textarea></div>
+
+    <div>
+      <label class="lbl">Технические характеристики</label>
+      <div id="specs-list" style="display:grid;gap:8px">
+        {% for s in specs %}
+        <div class="flex js-spec" style="flex-wrap:nowrap"><input class="field" name="spec_label" value="{{ s.label }}" placeholder="Параметр"><input class="field mono" name="spec_value" value="{{ s.value }}" placeholder="Значение"><button type="button" class="add-link js-spec-del">✕</button></div>
+        {% endfor %}
+      </div>
+      <button type="button" id="add-spec" class="add-link" style="margin-top:8px;border:0;color:var(--glow)">+ Добавить характеристику</button>
+    </div>
+
+    <div><label class="lbl">Особенности (по одной на строку)</label><textarea class="field" name="features" rows="4">{{ (p.features_json | fromjson) | join('\n') if p else '' }}</textarea></div>
+
+    <div>
+      <label class="lbl">Фотогалерея</label>
+      <input type="hidden" name="gallery_json" id="gallery_json" value='{{ gallery | tojson }}'>
+      <div id="gallery-list" class="flex"></div>
+      <label class="add-link" style="margin-top:8px;display:inline-block">+ Фото<input type="file" accept="image/*" class="js-upload" data-target="gallery" hidden></label>
+    </div>
+
+    <div>
+      <label class="lbl">Чертежи и схемы</label>
+      <input type="hidden" name="drawings_json" id="drawings_json" value='{{ drawings | tojson }}'>
+      <div id="draw-list" style="display:grid;gap:8px"></div>
+      <label class="add-link" style="margin-top:8px;display:inline-block">+ Чертёж<input type="file" accept="image/*,.gif" class="js-upload" data-target="draw" hidden></label>
+    </div>
+
+    <div class="grid grid--2">
+      <div><label class="lbl">Порядок сортировки</label><input class="field" type="number" name="sort_order" value="{{ p.sort_order if p else 0 }}"><div class="muted" style="font-size:12px;margin-top:4px">Чем меньше число — тем выше. Можно менять в списке товаров.</div></div>
+      <label class="flex" style="align-self:end;padding-bottom:24px;font-size:14px"><input type="checkbox" name="published" {{ 'checked' if (p.published if p else true) }}> Опубликован</label>
+    </div>
+
+    <div class="flex"><button class="btn btn--glow" type="submit">Сохранить</button><a href="{{ url_for('admin') }}" class="btn btn--ghost">Отмена</a></div>
+  </form>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/admin.js') }}"></script>{% endblock %}

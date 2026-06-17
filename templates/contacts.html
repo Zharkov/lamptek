@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Контакты — LampTek{% endblock %}
+{% block content %}
+{% set req = [
+  ('Полное наименование','ООО «ЗАРЯД»'),
+  ('Юридический адрес','214012, Смоленск, пер. Карачевский, д. 4, к. 2, пом. 38, оф. 103'),
+  ('ИНН / КПП','6700007926 / 670001001'),
+  ('ОГРН','1236700015914'),
+  ('Банк','ООО «Банк Точка», г. Москва'),
+  ('Р/счёт','40702810920000050508'),
+  ('Корр. счёт','30101810745374525104'),
+  ('БИК','044525104'),
+] %}
+<div class="container section">
+  <div class="eyebrow">Контакты</div>
+  <h1 class="mt8">Мы ответим на все ваши вопросы</h1>
+  <div class="hero__grid mt40" style="align-items:start">
+    <div>
+      <div class="grid grid--2">
+        <div class="card" style="padding:20px">
+          <div class="eyebrow">Телефон</div>
+          <div style="font-family:Unbounded;font-weight:700;font-size:20px;margin-top:8px;user-select:all;cursor:text">+7 (900) 226-30-13</div>
+          <a href="tel:+79002263013" style="display:inline-block;margin-top:12px;font-size:13px;color:var(--glow)">Позвонить →</a>
+        </div>
+        <div class="card" style="padding:20px">
+          <div class="eyebrow">E-mail</div>
+          <div style="font-family:Unbounded;font-weight:700;font-size:20px;margin-top:8px;user-select:all;cursor:text">info@lamptek.ru</div>
+          <a href="mailto:info@lamptek.ru" style="display:inline-block;margin-top:12px;font-size:13px;color:var(--glow)">Написать →</a>
+        </div>
+      </div>
+      <div class="card mt24" style="padding:20px">
+        <div class="between" style="margin-bottom:12px">
+          <div class="eyebrow">Реквизиты</div>
+          <button id="copy-req" class="add-link" style="font-size:13px">Скопировать</button>
+        </div>
+        <div id="req-table">
+          {% for k, v in req %}<div class="between" style="border-bottom:1px solid var(--border);padding:8px 0;font-size:14px"><span class="muted">{{ k }}</span><span class="mono" style="text-align:right">{{ v }}</span></div>{% endfor %}
+        </div>
+      </div>
+    </div>
+    <form id="lead-form" class="card" style="padding:24px;display:grid;gap:12px">
+      <div style="font-family:Unbounded;font-weight:700;font-size:18px">Оставьте контакты — перезвоним</div>
+      <input class="field" name="name" placeholder="Имя *">
+      <input class="field" name="phone" placeholder="Телефон *">
+      <input class="field" name="email" placeholder="Email">
+      <textarea class="field" name="comment" rows="3" placeholder="Комментарий"></textarea>
+      <label class="flex" style="font-size:13px;color:var(--muted);align-items:flex-start;gap:8px"><input type="checkbox" name="consent" style="margin-top:3px"><span>Согласен на обработку ПДн согласно <a href="{{ url_for('privacy') }}" style="color:var(--glow)">политике</a> (152-ФЗ).</span></label>
+      <div id="lead-note"></div>
+      <button class="btn btn--glow" type="submit">Отправить</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

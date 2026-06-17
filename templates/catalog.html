@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Каталог — LampTek{% endblock %}
+{% block content %}
+<div class="container section">
+  <div class="eyebrow">Каталог</div>
+  <h1 class="mt8">Светодиодное освещение</h1>
+  <div class="between mt24" style="flex-wrap:wrap;gap:12px">
+    <div class="flex" style="flex-wrap:wrap;gap:8px">
+      {% for c in top_categories %}<a href="{{ url_for('category', slug=c.slug) }}" class="btn btn--ghost btn--sm">{{ c.title }}</a>{% endfor %}
+    </div>
+    <input id="catalog-search" class="field" type="search" placeholder="Поиск..." style="max-width:220px;padding:8px 14px">
+  </div>
+  <div id="catalog-grid" class="grid grid--4 mt40">{% for p in products %}{% include '_card.html' %}{% endfor %}</div>
+  <p id="catalog-empty" class="muted" style="margin-top:32px;display:none">Ничего не найдено.</p>
+</div>
+{% endblock %}

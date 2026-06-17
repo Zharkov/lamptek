@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}{{ p.title }} — LampTek{% endblock %}
+{% block content %}
+{% set specs = p.specs_json | fromjson %}
+{% set features = p.features_json | fromjson %}
+{% set gallery = p.gallery_json | fromjson %}
+{% set drawings = p.drawings_json | fromjson %}
+<div class="container section">
+  <div style="display:flex;align-items:center;gap:16px;font-size:14px">
+    <a href="{{ url_for('category', slug=p.category.slug) }}" class="back-link">← Назад</a>
+    <span class="muted"><a href="{{ url_for('catalog') }}">Каталог</a> / <a href="{{ url_for('category', slug=p.category.slug) }}">{{ p.category.title }}</a></span>
+  </div>
+
+  <div class="hero__grid mt24" style="align-items:start">
+    <div>
+      {% set all_imgs = [p.main_image] + gallery %}
+      <div class="prod-gallery-wrap">
+        <div class="card product-card__img" id="prod-main" data-zoom="{{ p.main_image }}" data-cap="{{ p.title }}">
+          <img id="prod-main-img" src="{{ p.main_image }}" alt="{{ p.title }}">
+        </div>
+        {% if gallery %}
+        <button class="slider__arrow prod-prev" type="button">&#8249;</button>
+        <button class="slider__arrow prod-next" type="button">&#8250;</button>
+        {% endif %}
+      </div>
+      {% if gallery %}
+      <div class="thumbs" style="margin-top:12px">
+        {% for img in all_imgs %}
+        <div class="card thumb{% if loop.first %} active{% endif %}" data-src="{{ img }}"><img src="{{ img }}" alt=""></div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <div>
+      <div class="eyebrow">{{ p.category.title }}</div>
+      <h1 class="mt8">{{ p.title }}</h1>
+      <p class="muted mt16">{{ p.short_desc }}</p>
+      <div class="mono mt16" style="font-size:18px">{{ p | price_label }}</div>
+
+      <div class="flex mt24">
+        <span class="stepper qty-pick" data-target="{{ p.slug }}"><button class="dec">−</button><span class="qty">1</span><button class="inc">+</button></span>
+        <span class="cart-control" data-size="big" data-qty="1" data-slug="{{ p.slug }}" data-title="{{ p.title }}"></span>
+      </div>
+
+      {% if specs %}
+      <div class="mt40">
+        <div class="eyebrow" style="margin-bottom:8px">Технические характеристики</div>
+        <div class="specs">
+          {% for s in specs %}<div class="specs__row"><span class="l">{{ s.label }}</span><span class="v">{{ s.value }}</span></div>{% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if p.full_desc %}
+  <section class="mt40" style="max-width:65ch">
+    <h2 style="font-size:20px">Описание</h2>
+    <p class="muted mt16" style="white-space:pre-line">{{ p.full_desc }}</p>
+  </section>
+  {% endif %}
+
+  {% if features %}
+  <section class="mt40" style="max-width:65ch">
+    <h2 style="font-size:20px">Особенности</h2>
+    <ul class="mt16" style="list-style:none;padding:0;display:grid;gap:12px">
+      {% for f in features %}<li class="flex" style="align-items:flex-start;color:var(--muted)"><span style="width:6px;height:6px;border-radius:50%;background:var(--glow);margin-top:8px;flex:0 0 auto"></span>{{ f }}</li>{% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  {% if related %}
+  <section class="mt40">
+    <h2 style="font-size:20px">Похожие товары</h2>
+    <div class="grid grid--4 mt24">{% for p in related %}{% include '_card.html' %}{% endfor %}</div>
+  </section>
+  {% endif %}
+
+  {% if drawings %}
+  <section class="mt40">
+    <h2 style="font-size:20px">Чертежи и схемы</h2>
+    <div class="draw-grid">
+      {% for d in drawings %}
+      <div class="card draw"><figure>
+        <div class="draw__img" data-zoom="{{ d.url }}" data-cap="{{ d.caption }}"><img src="{{ d.url }}" alt="{{ d.caption }}"></div>
+        {% if d.caption %}<figcaption>{{ d.caption }}</figcaption>{% endif %}
+      </figure></div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

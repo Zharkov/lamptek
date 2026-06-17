@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Вход — LampTek{% endblock %}
+{% block content %}
+<div class="container section" style="max-width:380px">
+  <form method="post" class="card" style="padding:24px;display:grid;gap:12px">
+    <div style="font-family:Unbounded;font-weight:700;font-size:18px">Вход в админку</div>
+    <input class="field" name="username" placeholder="Логин" autofocus>
+    <input class="field" name="password" type="password" placeholder="Пароль">
+    <button class="btn btn--glow" type="submit">Войти</button>
+  </form>
+</div>
+{% endblock %}

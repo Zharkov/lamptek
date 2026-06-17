@@ -1,0 +1,23 @@
+<div class="card card--hover product-card product-card--hover">
+  {% set gallery = p.gallery_json | fromjson %}
+  {% set all_imgs = [p.main_image] + gallery %}
+  <a href="{{ url_for('product', slug=p.slug) }}" style="display:block">
+    <div class="product-card__img{% if all_imgs|length > 1 %} product-slider{% endif %}">
+      {% for img in all_imgs %}
+      <img src="{{ img }}" alt="{{ p.title }}" loading="lazy">
+      {% endfor %}
+      {% if all_imgs|length > 1 %}
+      <button class="slider__arrow slider__prev" type="button">&#8249;</button>
+      <button class="slider__arrow slider__next" type="button">&#8250;</button>
+      <div class="slider__dots">{% for _ in all_imgs %}<span class="slider__dot"></span>{% endfor %}</div>
+      {% endif %}
+    </div>
+    <div class="eyebrow mt16">{{ p.category.title }}</div>
+    <h3>{{ p.title }}</h3>
+    <div class="mono muted mt8">{{ p | price_label }}</div>
+  </a>
+  <div class="product-card__foot">
+    <span class="cart-control" data-slug="{{ p.slug }}" data-title="{{ p.title }}"></span>
+    <a href="{{ url_for('product', slug=p.slug) }}" style="color:var(--glow);font-size:14px">Подробнее</a>
+  </div>
+</div>

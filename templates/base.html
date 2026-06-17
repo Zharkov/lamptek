@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}LampTek — светодиодное освещение{% endblock %}</title>
+  <script>(function(){try{var t=localStorage.getItem('lt_theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono&display=swap&subset=cyrillic,latin" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<header class="header">
+  <div class="container header__row">
+    <a class="brand" href="{{ url_for('index') }}"><span class="brand__dot"></span><span class="brand__name">LampTek</span></a>
+    <nav class="nav">
+      <a href="{{ url_for('index') }}" class="{{ 'nav--active' if request.endpoint == 'index' }}">Главная</a>
+      <a href="{{ url_for('catalog') }}" class="{{ 'nav--active' if request.endpoint in ['catalog', 'category', 'product'] }}">Каталог</a>
+      <a href="{{ url_for('about') }}" class="{{ 'nav--active' if request.endpoint == 'about' }}">О нас</a>
+      <a href="{{ url_for('contacts') }}" class="{{ 'nav--active' if request.endpoint == 'contacts' }}">Контакты</a>
+    </nav>
+    <div class="header__actions">
+      <button id="theme-toggle" class="icon-btn" aria-label="Сменить тему" title="Светлая/тёмная тема">◐</button>
+      <a href="{{ url_for('admin_login') }}" class="icon-btn" aria-label="Вход администратора" title="Админка">⚙</a>
+      <a href="{{ url_for('cart') }}" class="btn btn--ghost btn--sm">Заявка <span id="cart-count" class="badge" hidden>0</span></a>
+      <button id="menu-btn" class="icon-btn menu-btn" aria-label="Меню">☰</button>
+    </div>
+  </div>
+</header>
+
+<div id="mobile-nav" class="mobile-nav" hidden>
+  <div class="container mobile-nav__links">
+    <a href="{{ url_for('index') }}" class="{{ 'nav--active' if request.endpoint == 'index' }}">Главная</a>
+    <a href="{{ url_for('catalog') }}" class="{{ 'nav--active' if request.endpoint in ['catalog', 'category', 'product'] }}">Каталог</a>
+    <a href="{{ url_for('about') }}" class="{{ 'nav--active' if request.endpoint == 'about' }}">О нас</a>
+    <a href="{{ url_for('contacts') }}" class="{{ 'nav--active' if request.endpoint == 'contacts' }}">Контакты</a>
+    <a href="{{ url_for('cart') }}">Заявка <span id="cart-count-m" class="badge" hidden>0</span></a>
+  </div>
+</div>
+
+{% with msgs = get_flashed_messages(with_categories=true) %}
+  {% if msgs %}<div class="container flashes">
+    {% for cat, m in msgs %}<div class="alert alert--{{ cat }}">{{ m }}</div>{% endfor %}
+  </div>{% endif %}
+{% endwith %}
+
+<main>{% block content %}{% endblock %}</main>
+
+<footer class="footer">
+  <div class="container footer__grid">
+    <div>
+      <div class="brand__name" style="font-size:20px">LampTek</div>
+      <p class="muted" style="max-width:28ch;margin-top:8px">Светодиодное освещение для города и промышленности. Производство, расчёт проекта, поставка.</p>
+    </div>
+    <div>
+      <div class="eyebrow">Разделы</div>
+      <ul class="footer__links">
+        <li><a href="{{ url_for('catalog') }}">Каталог</a></li>
+        <li><a href="{{ url_for('about') }}">О нас</a></li>
+        <li><a href="{{ url_for('contacts') }}">Контакты</a></li>
+        <li><a href="{{ url_for('privacy') }}">Политика обработки данных</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="eyebrow">Контакты</div>
+      <p class="muted" style="margin-top:10px">тел. <a href="tel:+79002263013">+7 (900) 226-30-13</a><br>info@lamptek.ru</p>
+    </div>
+  </div>
+  <div class="footer__bottom container">© {{ now_year }} LampTek · ООО «ЗАРЯД»</div>
+</footer>
+
+<button id="back-top" class="back-top" aria-label="Наверх">↑</button>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

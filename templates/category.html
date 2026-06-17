@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}{{ cat.title }} — LampTek{% endblock %}
+{% block content %}
+<div class="container section">
+  <a href="{{ url_for('catalog') }}" class="muted" style="font-size:14px">← Каталог</a>
+  <h1 class="mt16">{{ cat.title }}</h1>
+  {% if cat.children %}
+  <div class="flex mt16">
+    {% for c in cat.children %}<a href="{{ url_for('category', slug=c.slug) }}" class="add-link">{{ c.title }}</a>{% endfor %}
+  </div>
+  {% endif %}
+  {% if products %}
+  <div class="grid grid--4 mt40">{% for p in products %}{% include '_card.html' %}{% endfor %}</div>
+  {% else %}
+  <p class="muted mt40">В этом разделе пока нет товаров. Раздел заполняется.</p>
+  {% endif %}
+</div>
+{% endblock %}

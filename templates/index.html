@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="hero">
+  <div class="container hero__grid">
+    <div>
+      <div class="eyebrow">Производство светодиодных светильников</div>
+      <h1>Свет, который<br><span class="accent">держит нагрузку</span></h1>
+      <p class="muted" style="max-width:42ch">Уличное, промышленное и офисное освещение для объектов, где важны надёжность, ресурс и климат. Подберём решение под задачу и рассчитаем проект.</p>
+      <div class="flex mt24">
+        <a href="{{ url_for('catalog') }}" class="btn btn--glow">Смотреть каталог</a>
+        <a href="{{ url_for('cart') }}" class="btn btn--ghost">Запросить расчёт</a>
+      </div>
+    </div>
+    <div class="lamp">
+      <svg viewBox="0 0 320 300" aria-label="Светильник с регулируемой цветовой температурой">
+        <defs>
+          <linearGradient id="beamGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop id="beam-0" offset="0%" stop-color="rgba(255,224,170,.55)"/>
+            <stop id="beam-1" offset="100%" stop-color="rgba(255,224,170,.05)"/>
+          </linearGradient>
+          <filter id="blur"><feGaussianBlur stdDeviation="6"/></filter>
+        </defs>
+        <polygon points="160,72 250,260 70,260" fill="url(#beamGrad)"/>
+        <ellipse id="lamp-spot" cx="160" cy="262" rx="92" ry="14" fill="#FFE0AA" opacity=".45" filter="url(#blur)"/>
+        <rect x="120" y="46" width="80" height="26" rx="8" fill="var(--border)" stroke="var(--border2)"/>
+        <rect x="150" y="30" width="20" height="18" rx="3" fill="var(--border2)"/>
+        <ellipse id="lamp-lens" cx="160" cy="72" rx="34" ry="7" fill="#FFE0AA" filter="url(#blur)"/>
+        <ellipse cx="160" cy="72" rx="30" ry="5" fill="#fff" opacity=".85"/>
+      </svg>
+      <div class="temp card">
+        <div class="temp__row"><span class="muted">Цветовая температура</span><span id="temp-val" style="color:var(--glow)">4000 K</span></div>
+        <input id="temp-slider" type="range" min="2700" max="5000" step="100" value="4000" aria-label="Цветовая температура">
+        <div class="temp__scale"><span>2700K · тёплый</span><span>4000K</span><span>5000K · холодный</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="trust">
+  <div class="container">
+    <div class="eyebrow">Нам доверяют</div>
+    <h2 class="mt8" style="max-width:20ch">Освещаем объекты лидеров отрасли</h2>
+    <div class="grid grid--4 mt24">
+      {% for name, sector, logo in clients %}
+      <div class="card client"><img src="{{ logo }}" alt="{{ name }}" class="client__logo"><div><div style="font-family:Unbounded;font-weight:700">{{ name }}</div><div class="muted" style="font-size:12px">{{ sector }}</div></div></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="between" style="margin-bottom:24px"><h2>Рекомендуем</h2><a href="{{ url_for('catalog') }}" style="color:var(--glow);font-size:14px">Весь каталог →</a></div>
+    <div class="grid grid--4">{% for p in featured %}{% include '_card.html' %}{% endfor %}</div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Админка — LampTek{% endblock %}
+{% block content %}
+<div class="container section">
+  <div class="between">
+    <h1 style="font-size:22px">Админка</h1>
+    <div class="flex">
+      <a href="{{ url_for('index') }}" target="_blank" class="muted" style="font-size:14px">Открыть сайт ↗</a>
+      <a href="{{ url_for('admin_logout') }}" class="muted" style="font-size:14px">Выйти</a>
+    </div>
+  </div>
+
+  <h2 style="font-size:18px;margin-top:32px">Заявки</h2>
+  <div class="mt16" style="display:grid;gap:8px">
+    {% if not leads %}<p class="muted">Заявок пока нет.</p>{% endif %}
+    {% for l in leads %}
+    <div class="card lead js-lead"
+         data-id="{{ l.id }}" data-name="{{ l.name }}" data-phone="{{ l.phone }}"
+         data-email="{{ l.email }}" data-comment="{{ l.comment }}"
+         data-items="{{ l.items_json }}" data-status="{{ l.status }}"
+         data-date="{{ l.created_at.strftime('%d.%m.%Y %H:%M') }}">
+      <div class="flex">
+        <span class="lead__dot dot-{{ l.status }}"></span>
+        <div>
+          <span style="font-weight:600">{{ l.name }}</span>
+          <span class="mono" style="color:var(--glow);margin-left:12px">{{ l.phone }}</span>
+          {% if l.comment %}<div class="muted" style="font-size:14px;max-width:60ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ l.comment }}</div>{% endif %}
+        </div>
+      </div>
+      <div class="flex" onclick="event.stopPropagation()">
+        <span class="muted" style="font-size:12px">{{ l.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+        <select class="field js-status" data-id="{{ l.id }}" style="width:auto;padding:6px 10px;font-size:13px">
+          <option value="new" {{ 'selected' if l.status=='new' }}>Новая</option>
+          <option value="called" {{ 'selected' if l.status=='called' }}>Позвонили</option>
+          <option value="closed" {{ 'selected' if l.status=='closed' }}>Закрыта</option>
+        </select>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="between" style="margin-top:40px">
+    <h2 style="font-size:18px">Товары ({{ products|length }})</h2>
+    <a href="{{ url_for('product_new') }}" class="btn btn--glow btn--sm">+ Добавить товар</a>
+  </div>
+  <div class="card mt16" style="overflow-x:auto">
+    <table class="table">
+      <thead><tr><th title="Чем меньше число, тем выше в каталоге">Порядок</th><th>Название</th><th>Категория</th><th>Цена</th><th>Статус</th><th></th></tr></thead>
+      <tbody>
+        {% for p in products %}
+        <tr>
+          <td><input class="field num js-sort" type="number" value="{{ p.sort_order }}" data-id="{{ p.id }}"></td>
+          <td>{{ p.title }}</td>
+          <td class="muted">{{ p.category.title }}</td>
+          <td class="mono muted">{{ 'по запросу' if p.price_on_request or not p.price else '{:,} ₽'.format(p.price).replace(',',' ') }}</td>
+          <td>{{ '<span style="color:var(--glow)">опубликован</span>'|safe if p.published else '<span class="muted">скрыт</span>'|safe }}</td>
+          <td style="text-align:right;white-space:nowrap">
+            <a href="{{ url_for('product_edit', pid=p.id) }}" style="color:var(--glow)">Изменить</a>
+            <form method="post" action="{{ url_for('product_delete', pid=p.id) }}" style="display:inline;margin-left:12px" onsubmit="return confirm('Удалить товар?')"><button class="add-link" style="border:0;color:var(--muted)">Удалить</button></form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div id="lead-modal" class="modal" hidden><div class="card" style="width:100%;max-width:520px;padding:24px" onclick="event.stopPropagation()">
+  <div class="between"><div><div class="eyebrow">Заявка</div><h3 id="m-name" style="font-size:20px;margin-top:4px"></h3></div><button id="m-close" class="icon-btn" style="border:0;font-size:24px">×</button></div>
+  <div class="specs mt16">
+    <div class="specs__row"><span class="l">Телефон</span><span class="v" id="m-phone"></span></div>
+    <div class="specs__row" id="m-email-row"><span class="l">E-mail</span><span class="v" id="m-email"></span></div>
+    <div class="specs__row"><span class="l">Дата</span><span class="v" id="m-date"></span></div>
+  </div>
+  <div id="m-items-wrap" class="mt16"><div class="eyebrow" style="margin-bottom:8px">Позиции</div><ul id="m-items" style="list-style:none;padding:0;display:grid;gap:6px"></ul></div>
+  <div id="m-comment-wrap" class="mt16"><div class="eyebrow" style="margin-bottom:6px">Комментарий</div><p id="m-comment" style="background:var(--bg);border-radius:8px;padding:12px;font-size:14px"></p></div>
+</div></div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/admin.js') }}"></script>{% endblock %}

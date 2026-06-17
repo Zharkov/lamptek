@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Заявка — LampTek{% endblock %}
+{% block content %}
+<div class="container section">
+  <div class="eyebrow">Заявка</div>
+  <h1 class="mt8">Запрос расчёта</h1>
+  <p class="muted mt8" style="max-width:60ch">Оплата на сайте не нужна. Соберите позиции, оставьте контакты — менеджер свяжется, уточнит детали и подготовит расчёт под ваш объект.</p>
+
+  <div class="hero__grid mt40" style="align-items:start">
+    <div id="cart-items" style="display:grid;gap:12px"></div>
+    <form id="lead-form" class="card" style="padding:24px;display:grid;gap:12px">
+      <div style="font-family:Unbounded;font-weight:700;font-size:18px">Оставьте контакты — перезвоним</div>
+      <input class="field" name="name" placeholder="Имя *">
+      <input class="field" name="phone" placeholder="Телефон *">
+      <input class="field" name="email" placeholder="Email">
+      <textarea class="field" name="comment" rows="3" placeholder="Комментарий (объект, задача, объём)"></textarea>
+      <label class="flex" style="font-size:13px;color:var(--muted);align-items:flex-start;gap:8px">
+        <input type="checkbox" name="consent" style="margin-top:3px">
+        <span>Согласен на обработку персональных данных согласно <a href="{{ url_for('privacy') }}" style="color:var(--glow)">политике</a> (152-ФЗ).</span>
+      </label>
+      <div id="lead-note"></div>
+      <button class="btn btn--glow" type="submit">Отправить заявку</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
