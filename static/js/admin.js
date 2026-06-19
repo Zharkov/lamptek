@@ -37,11 +37,18 @@
         if (dot) {
           dot.className = 'lead__dot dot-' + sel.value;
         }
-        // Закрыта → убрать с дашборда
+        // Закрыта → убрать с дашборда (вправо)
         if (sel.value === 'closed' && sel.dataset.autoArchive && card) {
           card.style.transition = 'opacity .35s, transform .35s';
           card.style.opacity = '0';
           card.style.transform = 'translateX(20px)';
+          setTimeout(function () { card.remove(); }, 380);
+        }
+        // Активный статус → убрать из архива (влево)
+        if (sel.value !== 'closed' && sel.dataset.autoUnarchive && card) {
+          card.style.transition = 'opacity .35s, transform .35s';
+          card.style.opacity = '0';
+          card.style.transform = 'translateX(-20px)';
           setTimeout(function () { card.remove(); }, 380);
         }
       });
