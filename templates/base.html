@@ -23,7 +23,7 @@
     <div class="header__actions">
       <button id="theme-toggle" class="icon-btn" aria-label="Сменить тему" title="Светлая/тёмная тема">◐</button>
       {% if current_user.is_authenticated %}
-      <a href="{{ url_for('admin') }}" class="btn btn--ghost btn--sm">Админка</a>
+      <a href="{{ url_for('admin') }}" class="btn btn--ghost btn--sm">Управление</a>
       {% elif current_customer %}
       <a href="{{ url_for('profile') }}" class="btn btn--ghost btn--sm">{{ current_customer.name.split()[0] }}</a>
       {% else %}
