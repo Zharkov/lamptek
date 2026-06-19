@@ -22,17 +22,18 @@
     </nav>
     <div class="header__actions">
       <button id="theme-toggle" class="icon-btn" aria-label="Сменить тему" title="Светлая/тёмная тема">◐</button>
+      {% set _person_icon %}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>{% endset %}
       {% if current_user.is_authenticated %}
-      <a href="{{ url_for('admin') }}" class="icon-btn" aria-label="Панель администратора" title="Панель администратора">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <a href="{{ url_for('admin') }}" class="btn btn--ghost btn--sm" style="gap:6px">
+        {{ _person_icon }} {{ current_user.username }}
       </a>
       {% elif current_customer %}
-      <a href="{{ url_for('profile') }}" class="icon-btn" aria-label="Личный кабинет" title="{{ current_customer.name }}" style="border-color:var(--glow);color:var(--glow)">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <a href="{{ url_for('profile') }}" class="btn btn--ghost btn--sm" style="gap:6px;border-color:var(--glow);color:var(--glow)">
+        {{ _person_icon }} {{ current_customer.name }}
       </a>
       {% else %}
       <a href="{{ url_for('login') }}" class="icon-btn" aria-label="Войти" title="Войти в личный кабинет">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        {{ _person_icon }}
       </a>
       {% endif %}
       <a href="{{ url_for('cart') }}" class="btn btn--ghost btn--sm">Заявка <span id="cart-count" class="badge" hidden>0</span></a>
