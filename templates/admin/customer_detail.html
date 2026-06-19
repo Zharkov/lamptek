@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}{{ c.name }} — LampTek{% endblock %}
+{% block content %}
+<div class="container section" style="max-width:720px">
+  <a href="{{ url_for('admin_customers') }}" class="muted" style="font-size:14px">← Пользователи</a>
+
+  <div class="between mt16">
+    <div>
+      <div class="eyebrow">Клиент</div>
+      <h1 style="font-size:22px;margin-top:6px">{{ c.name }}</h1>
+      <p class="muted" style="font-size:13px">Зарегистрирован {{ c.created_at.strftime('%d.%m.%Y в %H:%M') }}</p>
+    </div>
+    <form method="post" onsubmit="return confirm('Удалить клиента безвозвратно?')">
+      <input type="hidden" name="action" value="delete">
+      <button class="btn btn--ghost btn--sm" style="border-color:#e05;color:#e05" type="submit">Удалить клиента</button>
+    </form>
+  </div>
+
+  <form method="post" class="card mt24" style="display:grid;gap:16px;padding:24px">
+    <input type="hidden" name="action" value="edit">
+    <div class="grid grid--2">
+      <div>
+        <label class="lbl">Имя *</label>
+        <input class="field" name="name" value="{{ c.name }}" required>
+      </div>
+      <div>
+        <label class="lbl">Телефон</label>
+        <input class="field" name="phone" value="{{ c.phone or '' }}">
+      </div>
+    </div>
+    <div>
+      <label class="lbl">Email *</label>
+      <input class="field" type="email" name="email" value="{{ c.email }}" required>
+    </div>
+    <div>
+      <label class="lbl">Новый пароль <span class="muted" style="font-weight:400">(оставьте пустым, если не меняете)</span></label>
+      <input class="field" type="password" name="new_password" placeholder="минимум 6 символов">
+    </div>
+    <div>
+      <button class="btn btn--glow" type="submit">Сохранить изменения</button>
+    </div>
+  </form>
+
+  <h2 style="font-size:18px;margin-top:40px">Заявки клиента ({{ leads|length }})</h2>
+  {% if leads %}
+  <div class="mt16" style="display:grid;gap:8px">
+    {% for l in leads %}
+    <div class="card">
+      <div class="flex">
+        <span class="lead__dot dot-{{ l.status }}"></span>
+        <div style="flex:1">
+          <div class="flex">
+            <span style="font-weight:600">{{ l.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+            <span class="muted" style="font-size:13px">{{ l.phone }}</span>
+          </div>
+          {% set items = l.items_json | fromjson %}
+          {% if items %}
+          <ul style="list-style:none;padding:0;margin:8px 0 0;display:grid;gap:3px">
+            {% for i in items %}
+            <li class="muted" style="font-size:13px">• {{ i.title }} — {{ i.qty }} шт.</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          {% if l.comment %}<p class="muted" style="font-size:13px;margin-top:6px">{{ l.comment }}</p>{% endif %}
+        </div>
+        <select class="field js-status" data-id="{{ l.id }}" style="width:auto;padding:6px 10px;font-size:13px;align-self:flex-start">
+          <option value="new" {{ 'selected' if l.status=='new' }}>Новая</option>
+          <option value="called" {{ 'selected' if l.status=='called' }}>Позвонили</option>
+          <option value="closed" {{ 'selected' if l.status=='closed' }}>Закрыта</option>
+        </select>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="muted mt16">Заявок нет.</p>
+  {% endif %}
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/admin.js') }}"></script>{% endblock %}

@@ -389,7 +389,9 @@ def admin():
     products = Product.query.order_by(Product.sort_order).all()
     leads = Lead.query.order_by(Lead.created_at.desc()).limit(100).all()
     categories = Category.query.order_by(Category.parent_id, Category.sort_order).all()
-    return render_template('admin/dashboard.html', products=products, leads=leads, categories=categories)
+    customers_count = Customer.query.count()
+    return render_template('admin/dashboard.html', products=products, leads=leads,
+                           categories=categories, customers_count=customers_count)
 
 
 def _parse_product_form(form):
@@ -472,6 +474,60 @@ def product_sort(pid):
     p.sort_order = int((request.get_json() or {}).get('sort_order') or 0)
     db.session.commit()
     return jsonify(ok=True)
+
+
+@app.route('/admin/customers')
+@admin_required
+def admin_customers():
+    q = request.args.get('q', '').strip()
+    query = Customer.query
+    if q:
+        like = '%{}%'.format(q)
+        query = query.filter(
+            Customer.name.ilike(like) |
+            Customer.email.ilike(like) |
+            Customer.phone.ilike(like)
+        )
+    customers = query.order_by(Customer.created_at.desc()).all()
+    lead_counts = {c.email: Lead.query.filter_by(email=c.email).count() for c in customers}
+    return render_template('admin/customers.html', customers=customers, q=q, lead_counts=lead_counts)
+
+
+@app.route('/admin/customers/<int:cid>', methods=['GET', 'POST'])
+@admin_required
+def admin_customer_detail(cid):
+    c = db.session.get(Customer, cid) or abort(404)
+    leads = Lead.query.filter_by(email=c.email).order_by(Lead.created_at.desc()).all()
+    if request.method == 'POST':
+        action = request.form.get('action')
+        if action == 'edit':
+            name = (request.form.get('name') or '').strip()
+            email = (request.form.get('email') or '').strip().lower()
+            phone = (request.form.get('phone') or '').strip()
+            if not name or not email:
+                flash('Имя и email обязательны', 'error')
+            else:
+                exists = Customer.query.filter_by(email=email).first()
+                if exists and exists.id != c.id:
+                    flash('Этот email уже занят', 'error')
+                else:
+                    c.name = name
+                    c.email = email
+                    c.phone = phone
+                    new_pw = (request.form.get('new_password') or '').strip()
+                    if new_pw:
+                        if len(new_pw) < 6:
+                            flash('Пароль должен быть не менее 6 символов', 'error')
+                        else:
+                            c.set_password(new_pw)
+                    db.session.commit()
+                    flash('Профиль обновлён', 'success')
+        elif action == 'delete':
+            db.session.delete(c)
+            db.session.commit()
+            flash('Клиент удалён', 'success')
+            return redirect(url_for('admin_customers'))
+    return render_template('admin/customer_detail.html', c=c, leads=leads)
 
 
 @app.route('/admin/categories/new', methods=['GET', 'POST'])

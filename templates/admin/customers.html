@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Пользователи — LampTek{% endblock %}
+{% block content %}
+<div class="container section">
+  <div class="between">
+    <div>
+      <a href="{{ url_for('admin') }}" class="muted" style="font-size:14px">← Админка</a>
+      <h1 style="font-size:22px;margin-top:8px">Пользователи</h1>
+    </div>
+    <form method="get" style="display:flex;gap:8px;align-items:center">
+      <input class="field" name="q" value="{{ q }}" placeholder="Поиск по имени, email, телефону" style="width:280px">
+      <button class="btn btn--ghost btn--sm" type="submit">Найти</button>
+      {% if q %}<a href="{{ url_for('admin_customers') }}" class="muted" style="font-size:14px">Сбросить</a>{% endif %}
+    </form>
+  </div>
+
+  <div class="card mt24" style="overflow-x:auto">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Имя</th>
+          <th>Email</th>
+          <th>Телефон</th>
+          <th>Заявок</th>
+          <th>Зарегистрирован</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for customer in customers %}
+        <tr>
+          <td style="font-weight:600">{{ customer.name }}</td>
+          <td class="mono muted" style="font-size:13px">{{ customer.email }}</td>
+          <td class="muted">{{ customer.phone or '—' }}</td>
+          <td class="muted">{{ lead_counts.get(customer.email, 0) }}</td>
+          <td class="muted" style="font-size:13px">{{ customer.created_at.strftime('%d.%m.%Y') }}</td>
+          <td style="text-align:right">
+            <a href="{{ url_for('admin_customer_detail', cid=customer.id) }}" style="color:var(--glow)">Открыть</a>
+          </td>
+        </tr>
+        {% endfor %}
+        {% if not customers %}
+        <tr><td colspan="6" class="muted">{% if q %}Ничего не найдено{% else %}Пользователей пока нет{% endif %}</td></tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

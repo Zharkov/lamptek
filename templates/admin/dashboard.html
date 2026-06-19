@@ -10,6 +10,24 @@
     </div>
   </div>
 
+  <div class="grid grid--4 mt32" style="gap:12px">
+    <a href="{{ url_for('admin_customers') }}" class="card" style="text-decoration:none">
+      <div class="eyebrow">Пользователи</div>
+      <div style="font-size:28px;font-family:Unbounded;font-weight:800;margin-top:6px">{{ customers_count }}</div>
+      <div class="muted" style="font-size:13px;margin-top:4px">Перейти →</div>
+    </a>
+    <div class="card">
+      <div class="eyebrow">Заявок всего</div>
+      <div style="font-size:28px;font-family:Unbounded;font-weight:800;margin-top:6px">{{ leads|length }}</div>
+      <div class="muted" style="font-size:13px;margin-top:4px">новых: {{ leads|selectattr('status','eq','new')|list|length }}</div>
+    </div>
+    <div class="card">
+      <div class="eyebrow">Товаров</div>
+      <div style="font-size:28px;font-family:Unbounded;font-weight:800;margin-top:6px">{{ products|length }}</div>
+      <div class="muted" style="font-size:13px;margin-top:4px">категорий: {{ categories|length }}</div>
+    </div>
+  </div>
+
   <h2 style="font-size:18px;margin-top:32px">Заявки</h2>
   <div class="mt16" style="display:grid;gap:8px">
     {% if not leads %}<p class="muted">Заявок пока нет.</p>{% endif %}
