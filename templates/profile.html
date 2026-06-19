@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Профиль — LampTek{% endblock %}
+{% block content %}
+<div class="container section" style="max-width:680px">
+  <div class="between">
+    <div>
+      <div class="eyebrow">Личный кабинет</div>
+      <h1 style="font-size:24px;margin-top:8px">{{ customer.name }}</h1>
+      <p class="muted" style="font-size:14px">{{ customer.email }}{% if customer.phone %} · {{ customer.phone }}{% endif %}</p>
+    </div>
+    <a href="{{ url_for('logout_customer') }}" class="btn btn--ghost btn--sm">Выйти</a>
+  </div>
+
+  <h2 style="font-size:18px;margin-top:40px">Мои заявки</h2>
+  {% if leads %}
+  <div class="mt16" style="display:grid;gap:8px">
+    {% for l in leads %}
+    <div class="card">
+      <div class="flex">
+        <span class="lead__dot dot-{{ l.status }}"></span>
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:15px">Заявка от {{ l.created_at.strftime('%d.%m.%Y') }}</div>
+          {% set items = l.items_json | fromjson %}
+          {% if items %}
+          <ul style="list-style:none;padding:0;margin:8px 0 0;display:grid;gap:4px">
+            {% for i in items %}
+            <li class="muted" style="font-size:14px">• {{ i.title }} — {{ i.qty }} шт.</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          {% if l.comment %}<p class="muted" style="font-size:13px;margin-top:6px">{{ l.comment }}</p>{% endif %}
+        </div>
+        <span class="muted" style="font-size:12px;white-space:nowrap">
+          {{ 'Новая' if l.status=='new' else ('Позвонили' if l.status=='called' else 'Закрыта') }}
+        </span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="muted mt16">Заявок пока нет. <a href="{{ url_for('catalog') }}" style="color:var(--glow)">Перейти в каталог →</a></p>
+  {% endif %}
+</div>
+{% endblock %}

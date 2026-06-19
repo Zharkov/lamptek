@@ -82,6 +82,21 @@ class Product(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
+class Customer(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    email = db.Column(db.String(160), unique=True, nullable=False)
+    phone = db.Column(db.String(60), default='')
+    password_hash = db.Column(db.String(255), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def set_password(self, pw):
+        self.password_hash = generate_password_hash(pw)
+
+    def check_password(self, pw):
+        return check_password_hash(self.password_hash, pw)
+
+
 class Lead(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
@@ -126,10 +141,18 @@ def price_label(product):
     return '≈ {:,} ₽'.format(product.price).replace(',', ' ')
 
 
+def get_current_customer():
+    cid = session.get('customer_id')
+    if cid:
+        return db.session.get(Customer, cid)
+    return None
+
+
 @app.context_processor
 def inject_nav():
     cats = Category.query.filter_by(parent_id=None).order_by(Category.sort_order).all()
-    return dict(nav_categories=cats, now_year=datetime.now().year)
+    return dict(nav_categories=cats, now_year=datetime.now().year,
+                current_customer=get_current_customer())
 
 
 # ==================== УВЕДОМЛЕНИЯ ====================
@@ -251,6 +274,66 @@ def lead():
     except Exception as e:
         app.logger.warning('notify failed: %s', e)
     return jsonify(ok=True)
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if get_current_customer():
+        return redirect(url_for('profile'))
+    if request.method == 'POST':
+        name = (request.form.get('name') or '').strip()
+        email = (request.form.get('email') or '').strip().lower()
+        phone = (request.form.get('phone') or '').strip()
+        password = request.form.get('password') or ''
+        password2 = request.form.get('password2') or ''
+        if not name or not email or not password:
+            flash('Заполните все обязательные поля', 'error')
+        elif password != password2:
+            flash('Пароли не совпадают', 'error')
+        elif len(password) < 6:
+            flash('Пароль должен быть не менее 6 символов', 'error')
+        elif Customer.query.filter_by(email=email).first():
+            flash('Этот email уже зарегистрирован', 'error')
+        else:
+            c = Customer(name=name, email=email, phone=phone)
+            c.set_password(password)
+            db.session.add(c)
+            db.session.commit()
+            session['customer_id'] = c.id
+            flash('Добро пожаловать, {}!'.format(name), 'success')
+            return redirect(url_for('profile'))
+    return render_template('register.html')
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if get_current_customer():
+        return redirect(url_for('profile'))
+    if request.method == 'POST':
+        email = (request.form.get('email') or '').strip().lower()
+        password = request.form.get('password') or ''
+        c = Customer.query.filter_by(email=email).first()
+        if c and c.check_password(password):
+            session['customer_id'] = c.id
+            flash('С возвращением, {}!'.format(c.name), 'success')
+            return redirect(request.args.get('next') or url_for('profile'))
+        flash('Неверный email или пароль', 'error')
+    return render_template('login.html')
+
+
+@app.route('/logout-customer')
+def logout_customer():
+    session.pop('customer_id', None)
+    return redirect(url_for('index'))
+
+
+@app.route('/profile')
+def profile():
+    c = get_current_customer()
+    if not c:
+        return redirect(url_for('login'))
+    leads = Lead.query.filter_by(email=c.email).order_by(Lead.created_at.desc()).all()
+    return render_template('profile.html', customer=c, leads=leads)
 
 
 @app.route('/about')

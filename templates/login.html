@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Вход — LampTek{% endblock %}
+{% block content %}
+<div class="container section" style="max-width:460px">
+  <div class="eyebrow">Личный кабинет</div>
+  <h1 style="font-size:26px;margin-top:8px">Вход</h1>
+  <form method="post" class="mt24" style="display:grid;gap:16px">
+    <div>
+      <label class="lbl">Email</label>
+      <input class="field" type="email" name="email" placeholder="ivan@example.com" required>
+    </div>
+    <div>
+      <label class="lbl">Пароль</label>
+      <input class="field" type="password" name="password" required>
+    </div>
+    <button class="btn btn--glow" type="submit" style="width:100%">Войти</button>
+  </form>
+  <p class="muted mt16" style="font-size:14px;text-align:center">
+    Нет аккаунта? <a href="{{ url_for('register') }}" style="color:var(--glow)">Зарегистрироваться</a>
+  </p>
+</div>
+{% endblock %}
