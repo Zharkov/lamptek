@@ -457,6 +457,15 @@ def product_delete(pid):
     return redirect(url_for('admin'))
 
 
+@app.route('/admin/products/<int:pid>/toggle', methods=['POST'])
+@admin_required
+def product_toggle(pid):
+    p = db.session.get(Product, pid) or abort(404)
+    p.published = not p.published
+    db.session.commit()
+    return jsonify(ok=True, published=p.published)
+
+
 @app.route('/admin/products/<int:pid>/sort', methods=['POST'])
 @admin_required
 def product_sort(pid):

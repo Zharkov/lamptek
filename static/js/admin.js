@@ -55,6 +55,19 @@
     });
   });
 
+  // ===== Переключение публикации товара =====
+  document.querySelectorAll('.js-toggle-pub').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      fetch('/admin/products/' + btn.dataset.id + '/toggle', { method: 'POST' })
+        .then(function (r) { return r.json(); })
+        .then(function (j) {
+          btn.textContent = j.published ? 'опубликован' : 'скрыт';
+          btn.style.color = j.published ? 'var(--glow)' : 'var(--muted)';
+          btn.title = j.published ? 'Нажмите, чтобы снять с публикации' : 'Нажмите, чтобы опубликовать';
+        });
+    });
+  });
+
   // ===== Инлайн-сортировка товаров =====
   document.querySelectorAll('.js-sort').forEach(function (inp) {
     var prev = inp.value;

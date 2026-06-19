@@ -110,7 +110,13 @@
           <td>{{ p.title }}</td>
           <td class="muted">{{ p.category.title }}</td>
           <td class="mono muted">{{ 'по запросу' if p.price_on_request or not p.price else '{:,} ₽'.format(p.price).replace(',',' ') }}</td>
-          <td>{{ '<span style="color:var(--glow)">опубликован</span>'|safe if p.published else '<span class="muted">скрыт</span>'|safe }}</td>
+          <td>
+            <button class="js-toggle-pub add-link" data-id="{{ p.id }}"
+              style="border:0;font-size:14px;color:{{ 'var(--glow)' if p.published else 'var(--muted)' }}"
+              title="Нажмите, чтобы {{ 'снять с публикации' if p.published else 'опубликовать' }}">
+              {{ 'опубликован' if p.published else 'скрыт' }}
+            </button>
+          </td>
           <td style="text-align:right;white-space:nowrap">
             <a href="{{ url_for('product_edit', pid=p.id) }}" style="color:var(--glow)">Изменить</a>
             <form method="post" action="{{ url_for('product_delete', pid=p.id) }}" style="display:inline;margin-left:12px" onsubmit="return confirm('Удалить товар?')"><button class="add-link" style="border:0;color:var(--muted)">Удалить</button></form>
