@@ -7,15 +7,15 @@
   <form method="post" class="mt24" style="display:grid;gap:16px">
     <div>
       <label class="lbl">Имя *</label>
-      <input class="field" name="name" placeholder="Иван Иванов" required>
+      <input class="field" name="name" placeholder="Иван Иванов" value="{{ form.name if form else '' }}" required>
     </div>
     <div>
       <label class="lbl">Email *</label>
-      <input class="field" type="email" name="email" placeholder="ivan@example.com" required>
+      <input class="field" type="email" name="email" placeholder="ivan@example.com" value="{{ form.email if form else '' }}" required>
     </div>
     <div>
       <label class="lbl">Телефон</label>
-      <input class="field" type="tel" name="phone" placeholder="+7 (900) 000-00-00">
+      <input class="field" type="tel" name="phone" placeholder="+7 (900) 000-00-00" value="{{ form.phone if form else '' }}">
     </div>
     <div>
       <label class="lbl">Пароль * <span class="muted" style="font-size:12px">минимум 6 символов</span></label>

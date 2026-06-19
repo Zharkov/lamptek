@@ -40,13 +40,13 @@
       var q = qtyOf(slug);
       if (q === 0) {
         el.innerHTML = big
-          ? '<button class="btn btn--glow js-add">В заявку</button><span class="muted" style="margin-left:10px">Цена по запросу</span>'
-          : '<button class="add-link js-add">+ В заявку</button>';
+          ? '<button class="btn btn--glow js-add">В корзину</button><span class="muted" style="margin-left:10px">Цена по запросу</span>'
+          : '<button class="add-link js-add">+ В корзину</button>';
       } else {
-        var label = big ? '<span class="muted" style="margin-right:8px">В заявке:</span>' : '';
+        var label = big ? '<span class="muted" style="margin-right:8px">В корзине:</span>' : '';
         el.innerHTML = label +
           '<span class="stepper stepper--glow"><button class="js-dec">−</button><span class="qty">' + q + '</span><button class="js-inc">+</button></span>' +
-          (big ? '<span style="margin-left:8px">шт.</span> <a href="/cart" class="btn btn--glow btn--sm" style="margin-left:10px">К заявке</a>' : '');
+          (big ? '<span style="margin-left:8px">шт.</span> <a href="/cart" class="btn btn--glow btn--sm" style="margin-left:10px">Перейти в корзину</a>' : '');
       }
       el.querySelector('.js-add') && el.querySelector('.js-add').addEventListener('click', function (e) { e.preventDefault(); add(slug, title, big ? (parseInt(el.dataset.qty) || 1) : 1); });
       el.querySelector('.js-inc') && el.querySelector('.js-inc').addEventListener('click', function () { setQty(slug, qtyOf(slug) + 1); });

@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
-{% block title %}Заявка — LampTek{% endblock %}
+{% block title %}Корзина — LampTek{% endblock %}
 {% block content %}
 <div class="container section">
-  <div class="eyebrow">Заявка</div>
+  <div class="eyebrow">Корзина</div>
   <h1 class="mt8">Запрос расчёта</h1>
   <p class="muted mt8" style="max-width:60ch">Оплата на сайте не нужна. Соберите позиции, оставьте контакты — менеджер свяжется, уточнит детали и подготовит расчёт под ваш объект.</p>
 
@@ -10,9 +10,9 @@
     <div id="cart-items" style="display:grid;gap:12px"></div>
     <form id="lead-form" class="card" style="padding:24px;display:grid;gap:12px">
       <div style="font-family:Unbounded;font-weight:700;font-size:18px">Оставьте контакты — перезвоним</div>
-      <input class="field" name="name" placeholder="Имя *">
-      <input class="field" name="phone" placeholder="Телефон *">
-      <input class="field" name="email" placeholder="Email">
+      <input class="field" name="name" placeholder="Имя *" value="{{ customer.name if customer else '' }}">
+      <input class="field" name="phone" placeholder="Телефон *" value="{{ customer.phone if customer else '' }}">
+      <input class="field" name="email" placeholder="Email" value="{{ customer.email if customer else '' }}">
       <textarea class="field" name="comment" rows="3" placeholder="Комментарий (объект, задача, объём)"></textarea>
       <label class="flex" style="font-size:13px;color:var(--muted);align-items:flex-start;gap:8px">
         <input type="checkbox" name="consent" style="margin-top:3px">

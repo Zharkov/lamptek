@@ -243,7 +243,7 @@ def product(slug):
 
 @app.route('/cart')
 def cart():
-    return render_template('cart.html')
+    return render_template('cart.html', customer=get_current_customer())
 
 
 @app.route('/lead', methods=['POST'])
@@ -302,7 +302,8 @@ def register():
             session['customer_id'] = c.id
             flash('Добро пожаловать, {}!'.format(name), 'success')
             return redirect(url_for('profile'))
-    return render_template('register.html')
+        return render_template('register.html', form=request.form)
+    return render_template('register.html', form=None)
 
 
 @app.route('/login', methods=['GET', 'POST'])

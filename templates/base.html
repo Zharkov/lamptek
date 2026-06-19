@@ -36,7 +36,7 @@
         {{ _person_icon }}
       </a>
       {% endif %}
-      <a href="{{ url_for('cart') }}" class="btn btn--ghost btn--sm">Заявка <span id="cart-count" class="badge" hidden>0</span></a>
+      <a href="{{ url_for('cart') }}" class="btn btn--ghost btn--sm">Корзина <span id="cart-count" class="badge" hidden>0</span></a>
       <button id="menu-btn" class="icon-btn menu-btn" aria-label="Меню">☰</button>
     </div>
   </div>
@@ -48,7 +48,7 @@
     <a href="{{ url_for('catalog') }}" class="{{ 'nav--active' if request.endpoint in ['catalog', 'category', 'product'] }}">Каталог</a>
     <a href="{{ url_for('about') }}" class="{{ 'nav--active' if request.endpoint == 'about' }}">О нас</a>
     <a href="{{ url_for('contacts') }}" class="{{ 'nav--active' if request.endpoint == 'contacts' }}">Контакты</a>
-    <a href="{{ url_for('cart') }}">Заявка <span id="cart-count-m" class="badge" hidden>0</span></a>
+    <a href="{{ url_for('cart') }}">Корзина <span id="cart-count-m" class="badge" hidden>0</span></a>
   </div>
 </div>
 
