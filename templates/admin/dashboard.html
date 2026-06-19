@@ -22,10 +22,10 @@
       </div>
     </a>
     <div class="card" style="display:flex;align-items:center;gap:20px;padding:20px">
-      <div style="font-size:36px;font-family:Unbounded;font-weight:800;color:var(--glow);line-height:1">{{ leads|length }}</div>
+      <div style="font-size:36px;font-family:Unbounded;font-weight:800;color:var(--glow);line-height:1">{{ leads|selectattr('status','eq','new')|list|length }}</div>
       <div>
-        <div style="font-weight:600;font-size:15px">Заявки</div>
-        <div class="muted" style="font-size:13px;margin-top:2px">новых: {{ leads|selectattr('status','eq','new')|list|length }}</div>
+        <div style="font-weight:600;font-size:15px">Новые заявки</div>
+        <div class="muted" style="font-size:13px;margin-top:2px">в работе: {{ leads|selectattr('status','eq','called')|list|length }}</div>
       </div>
     </div>
     <div class="card" style="display:flex;align-items:center;gap:20px;padding:20px">
@@ -37,9 +37,12 @@
     </div>
   </div>
 
-  <h2 style="font-size:18px;margin-top:32px">Заявки</h2>
+  <div class="between" style="margin-top:32px">
+    <h2 style="font-size:18px">Новые заявки</h2>
+    <a href="{{ url_for('leads_archive') }}" class="muted" style="font-size:14px">Архив ({{ archived_count }}) →</a>
+  </div>
   <div class="mt16" style="display:grid;gap:8px">
-    {% if not leads %}<p class="muted">Заявок пока нет.</p>{% endif %}
+    {% if not leads %}<p class="muted">Новых заявок нет.</p>{% endif %}
     {% for l in leads %}
     <div class="card lead js-lead"
          data-id="{{ l.id }}" data-name="{{ l.name }}" data-phone="{{ l.phone }}"

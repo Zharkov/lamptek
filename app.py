@@ -1,8 +1,5 @@
 """
 LampTek — сайт светодиодного освещения.
-Flask + Flask-SQLAlchemy + Flask-Login + SQLite.
-Каталог с админкой (CRUD) и корзиной-заявкой без оплаты: при отправке
-менеджеру летит уведомление (email + опционально Telegram).
 """
 import os
 import json
@@ -388,11 +385,14 @@ def admin_logout():
 @admin_required
 def admin():
     products = Product.query.order_by(Product.sort_order).all()
-    leads = Lead.query.order_by(Lead.created_at.desc()).limit(100).all()
+    active_leads = (Lead.query.filter(Lead.status.in_(['new', 'called']))
+                    .order_by(Lead.created_at.desc()).all())
+    archived_count = Lead.query.filter_by(status='closed').count()
     categories = Category.query.order_by(Category.parent_id, Category.sort_order).all()
     customers_count = Customer.query.count()
-    return render_template('admin/dashboard.html', products=products, leads=leads,
-                           categories=categories, customers_count=customers_count)
+    return render_template('admin/dashboard.html', products=products, leads=active_leads,
+                           archived_count=archived_count, categories=categories,
+                           customers_count=customers_count)
 
 
 def _parse_product_form(form):
@@ -593,6 +593,13 @@ def category_delete(cid):
     db.session.commit()
     flash('Категория удалена', 'success')
     return redirect(url_for('admin'))
+
+
+@app.route('/admin/leads/archive')
+@admin_required
+def leads_archive():
+    leads = Lead.query.filter_by(status='closed').order_by(Lead.created_at.desc()).all()
+    return render_template('admin/leads_archive.html', leads=leads)
 
 
 @app.route('/admin/leads/<int:lid>/status', methods=['POST'])
