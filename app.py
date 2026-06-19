@@ -596,7 +596,7 @@ def leads_archive():
 def lead_status(lid):
     l = db.session.get(Lead, lid) or abort(404)
     status = (request.get_json() or {}).get('status')
-    if status in ('new', 'called', 'closed'):
+    if status in ('new', 'called', 'return', 'closed'):
         l.status = status
         db.session.commit()
     return jsonify(ok=True)

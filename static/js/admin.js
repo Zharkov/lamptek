@@ -27,9 +27,17 @@
   // ===== Статус заявки =====
   document.querySelectorAll('.js-status').forEach(function (sel) {
     sel.addEventListener('change', function () {
+      var card = sel.closest('.card');
       fetch('/admin/leads/' + sel.dataset.id + '/status', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: sel.value })
+      }).then(function () {
+        if (sel.value === 'closed' && sel.dataset.autoArchive && card) {
+          card.style.transition = 'opacity .35s, transform .35s';
+          card.style.opacity = '0';
+          card.style.transform = 'translateX(20px)';
+          setTimeout(function () { card.remove(); }, 380);
+        }
       });
     });
   });

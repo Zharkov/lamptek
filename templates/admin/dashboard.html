@@ -59,9 +59,10 @@
       </div>
       <div class="flex" onclick="event.stopPropagation()">
         <span class="muted" style="font-size:12px">{{ l.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
-        <select class="field js-status" data-id="{{ l.id }}" style="width:auto;padding:6px 10px;font-size:13px">
+        <select class="field js-status" data-id="{{ l.id }}" data-auto-archive="1" style="width:auto;padding:6px 10px;font-size:13px">
           <option value="new" {{ 'selected' if l.status=='new' }}>Новая</option>
           <option value="called" {{ 'selected' if l.status=='called' }}>Позвонили</option>
+          <option value="return" {{ 'selected' if l.status=='return' }}>К возврату</option>
           <option value="closed" {{ 'selected' if l.status=='closed' }}>Закрыта</option>
         </select>
       </div>

@@ -66,6 +66,7 @@
         <select class="field js-status" data-id="{{ l.id }}" style="width:auto;padding:6px 10px;font-size:13px;align-self:flex-start">
           <option value="new" {{ 'selected' if l.status=='new' }}>Новая</option>
           <option value="called" {{ 'selected' if l.status=='called' }}>Позвонили</option>
+          <option value="return" {{ 'selected' if l.status=='return' }}>К возврату</option>
           <option value="closed" {{ 'selected' if l.status=='closed' }}>Закрыта</option>
         </select>
       </div>
