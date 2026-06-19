@@ -22,7 +22,11 @@
     </nav>
     <div class="header__actions">
       <button id="theme-toggle" class="icon-btn" aria-label="Сменить тему" title="Светлая/тёмная тема">◐</button>
-      <a href="{{ url_for('admin_login') }}" class="icon-btn" aria-label="Вход администратора" title="Админка">⚙</a>
+      {% if current_user.is_authenticated %}
+      <a href="{{ url_for('admin') }}" class="btn btn--ghost btn--sm">Админка</a>
+      {% else %}
+      <a href="{{ url_for('admin_login') }}" class="btn btn--ghost btn--sm">Войти</a>
+      {% endif %}
       <a href="{{ url_for('cart') }}" class="btn btn--ghost btn--sm">Заявка <span id="cart-count" class="badge" hidden>0</span></a>
       <button id="menu-btn" class="icon-btn menu-btn" aria-label="Меню">☰</button>
     </div>
