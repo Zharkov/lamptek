@@ -310,14 +310,15 @@ def login():
     if get_current_customer():
         return redirect(url_for('profile'))
     if request.method == 'POST':
-        email = (request.form.get('email') or '').strip().lower()
+        login_val = (request.form.get('login') or '').strip()
         password = request.form.get('password') or ''
-        c = Customer.query.filter_by(email=email).first()
+        c = (Customer.query.filter_by(email=login_val.lower()).first()
+             or Customer.query.filter_by(phone=login_val).first())
         if c and c.check_password(password):
             session['customer_id'] = c.id
             flash('С возвращением, {}!'.format(c.name), 'success')
             return redirect(request.args.get('next') or url_for('profile'))
-        flash('Неверный email или пароль', 'error')
+        flash('Неверный логин или пароль', 'error')
     return render_template('login.html')
 
 
