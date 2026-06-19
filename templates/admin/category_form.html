@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Редактирование категории' if c else 'Новая категория' }} — LampTek{% endblock %}
+{% block content %}
+<div class="container section" style="max-width:560px">
+  <h1 style="font-size:20px">{{ 'Редактирование: ' + c.title if c else 'Новая категория' }}</h1>
+  <form method="post" class="mt24" style="display:grid;gap:18px">
+    <div>
+      <label class="lbl">Название *</label>
+      <input class="field" name="title" value="{{ c.title if c else (form.title if form else '') }}" required>
+    </div>
+    <div>
+      <label class="lbl">Slug (адрес) *</label>
+      <input class="field mono" name="slug" placeholder="ulichnoe-osveshchenie"
+             value="{{ c.slug if c else (form.slug if form else '') }}" required>
+      <div class="muted" style="font-size:12px;margin-top:4px">Латиница, цифры, дефис. Пример: <span class="mono">promyshlennoe</span></div>
+    </div>
+    <div>
+      <label class="lbl">Родительская категория</label>
+      <select class="field" name="parent_id">
+        <option value="">— корневая категория —</option>
+        {% for cat in cats %}
+        <option value="{{ cat.id }}" {{ 'selected' if (c and c.parent_id == cat.id) or (form and form.parent_id == cat.id|string) }}>{{ cat.title }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="lbl">Порядок сортировки</label>
+      <input class="field" type="number" name="sort_order"
+             value="{{ c.sort_order if c else (form.sort_order if form else 0) }}">
+      <div class="muted" style="font-size:12px;margin-top:4px">Чем меньше — тем выше в навигации.</div>
+    </div>
+    <div class="flex">
+      <button class="btn btn--glow" type="submit">Сохранить</button>
+      <a href="{{ url_for('admin') }}" class="btn btn--ghost">Отмена</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -40,6 +40,32 @@
   </div>
 
   <div class="between" style="margin-top:40px">
+    <h2 style="font-size:18px">Категории</h2>
+    <a href="{{ url_for('category_new') }}" class="btn btn--glow btn--sm">+ Добавить категорию</a>
+  </div>
+  <div class="card mt16" style="overflow-x:auto">
+    <table class="table">
+      <thead><tr><th>Порядок</th><th>Название</th><th>Slug</th><th>Родитель</th><th>Товаров</th><th></th></tr></thead>
+      <tbody>
+        {% for c in categories %}
+        <tr>
+          <td class="muted">{{ c.sort_order }}</td>
+          <td>{{ c.title }}</td>
+          <td class="mono muted">{{ c.slug }}</td>
+          <td class="muted">{{ c.parent.title if c.parent else '—' }}</td>
+          <td class="muted">{{ c.products|length }}</td>
+          <td style="text-align:right;white-space:nowrap">
+            <a href="{{ url_for('category_edit', cid=c.id) }}" style="color:var(--glow)">Изменить</a>
+            <form method="post" action="{{ url_for('category_delete', cid=c.id) }}" style="display:inline;margin-left:12px" onsubmit="return confirm('Удалить категорию?')"><button class="add-link" style="border:0;color:var(--muted)">Удалить</button></form>
+          </td>
+        </tr>
+        {% endfor %}
+        {% if not categories %}<tr><td colspan="6" class="muted">Категорий пока нет.</td></tr>{% endif %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="between" style="margin-top:40px">
     <h2 style="font-size:18px">Товары ({{ products|length }})</h2>
     <a href="{{ url_for('product_new') }}" class="btn btn--glow btn--sm">+ Добавить товар</a>
   </div>

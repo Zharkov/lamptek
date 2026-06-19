@@ -23,7 +23,11 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'change-me-in-production')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///lamptek.db')
+_db_url = os.environ.get('DATABASE_URL', 'sqlite:///lamptek.db')
+# Render передаёт postgres://, SQLAlchemy требует postgresql://
+if _db_url.startswith('postgres://'):
+    _db_url = _db_url.replace('postgres://', 'postgresql://', 1)
+app.config['SQLALCHEMY_DATABASE_URI'] = _db_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = os.path.join(app.static_folder, 'uploads')
 
@@ -292,7 +296,8 @@ def admin_logout():
 def admin():
     products = Product.query.order_by(Product.sort_order).all()
     leads = Lead.query.order_by(Lead.created_at.desc()).limit(100).all()
-    return render_template('admin/dashboard.html', products=products, leads=leads)
+    categories = Category.query.order_by(Category.parent_id, Category.sort_order).all()
+    return render_template('admin/dashboard.html', products=products, leads=leads, categories=categories)
 
 
 def _parse_product_form(form):
@@ -375,6 +380,70 @@ def product_sort(pid):
     p.sort_order = int((request.get_json() or {}).get('sort_order') or 0)
     db.session.commit()
     return jsonify(ok=True)
+
+
+@app.route('/admin/categories/new', methods=['GET', 'POST'])
+@admin_required
+def category_new():
+    cats = Category.query.order_by(Category.sort_order).all()
+    if request.method == 'POST':
+        slug = (request.form.get('slug') or '').strip()
+        title = (request.form.get('title') or '').strip()
+        if not slug or not title:
+            flash('Заполните название и slug', 'error')
+            return render_template('admin/category_form.html', cats=cats, c=None, form=request.form)
+        if Category.query.filter_by(slug=slug).first():
+            flash('Slug уже занят', 'error')
+            return render_template('admin/category_form.html', cats=cats, c=None, form=request.form)
+        parent_id = request.form.get('parent_id') or None
+        db.session.add(Category(
+            slug=slug, title=title,
+            sort_order=int(request.form.get('sort_order') or 0),
+            parent_id=int(parent_id) if parent_id else None,
+        ))
+        db.session.commit()
+        flash('Категория создана', 'success')
+        return redirect(url_for('admin'))
+    return render_template('admin/category_form.html', cats=cats, c=None, form=None)
+
+
+@app.route('/admin/categories/<int:cid>/edit', methods=['GET', 'POST'])
+@admin_required
+def category_edit(cid):
+    c = db.session.get(Category, cid) or abort(404)
+    cats = Category.query.filter(Category.id != cid).order_by(Category.sort_order).all()
+    if request.method == 'POST':
+        slug = (request.form.get('slug') or '').strip()
+        title = (request.form.get('title') or '').strip()
+        if not slug or not title:
+            flash('Заполните название и slug', 'error')
+            return render_template('admin/category_form.html', cats=cats, c=c, form=request.form)
+        exists = Category.query.filter_by(slug=slug).first()
+        if exists and exists.id != c.id:
+            flash('Slug уже занят', 'error')
+            return render_template('admin/category_form.html', cats=cats, c=c, form=request.form)
+        parent_id = request.form.get('parent_id') or None
+        c.slug = slug
+        c.title = title
+        c.sort_order = int(request.form.get('sort_order') or 0)
+        c.parent_id = int(parent_id) if parent_id else None
+        db.session.commit()
+        flash('Категория сохранена', 'success')
+        return redirect(url_for('admin'))
+    return render_template('admin/category_form.html', cats=cats, c=c, form=None)
+
+
+@app.route('/admin/categories/<int:cid>/delete', methods=['POST'])
+@admin_required
+def category_delete(cid):
+    c = db.session.get(Category, cid) or abort(404)
+    if c.products or c.children:
+        flash('Нельзя удалить: есть товары или подкатегории', 'error')
+        return redirect(url_for('admin'))
+    db.session.delete(c)
+    db.session.commit()
+    flash('Категория удалена', 'success')
+    return redirect(url_for('admin'))
 
 
 @app.route('/admin/leads/<int:lid>/status', methods=['POST'])
