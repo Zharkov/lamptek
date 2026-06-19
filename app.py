@@ -312,6 +312,12 @@ def login():
     if request.method == 'POST':
         login_val = (request.form.get('login') or '').strip()
         password = request.form.get('password') or ''
+        # Проверяем админа
+        admin = User.query.filter_by(username=login_val).first()
+        if admin and admin.check_password(password):
+            login_user(admin)
+            return redirect(url_for('admin'))
+        # Проверяем клиента по email или телефону
         c = (Customer.query.filter_by(email=login_val.lower()).first()
              or Customer.query.filter_by(phone=login_val).first())
         if c and c.check_password(password):
