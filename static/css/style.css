@@ -165,8 +165,11 @@ label.lbl { display: block; font-size: 14px; color: var(--muted); margin-bottom:
 
 /* ===== Заявки ===== */
 .lead { width: 100%; text-align: left; padding: 16px; display: flex; justify-content: space-between; gap: 16px; align-items: center; cursor: pointer; }
-.lead__dot { width: 8px; height: 8px; border-radius: 50%; }
-.dot-new { background: var(--glow); } .dot-called { background: var(--beam); } .dot-closed { background: var(--muted); }
+.lead__dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.dot-new    { background: #FFB347; box-shadow: 0 0 6px #FFB34788; }
+.dot-called { background: #4CAF50; box-shadow: 0 0 6px #4CAF5088; }
+.dot-return { background: #E67E22; box-shadow: 0 0 6px #E67E2288; }
+.dot-closed { background: var(--muted); }
 .modal { position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,.6); display: flex; align-items: center; justify-content: center; padding: 16px; }
 
 /* ===== Утилиты ===== */
