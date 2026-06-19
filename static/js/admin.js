@@ -63,6 +63,8 @@
         .then(function (j) {
           btn.textContent = j.published ? 'опубликован' : 'скрыт';
           btn.style.color = j.published ? 'var(--glow)' : 'var(--muted)';
+          btn.style.borderColor = j.published ? 'var(--glow)' : 'var(--border2)';
+          btn.style.background = j.published ? 'var(--glow-soft)' : 'transparent';
           btn.title = j.published ? 'Нажмите, чтобы снять с публикации' : 'Нажмите, чтобы опубликовать';
         });
     });

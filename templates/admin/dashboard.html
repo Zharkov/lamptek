@@ -111,9 +111,9 @@
           <td class="muted">{{ p.category.title }}</td>
           <td class="mono muted">{{ 'по запросу' if p.price_on_request or not p.price else '{:,} ₽'.format(p.price).replace(',',' ') }}</td>
           <td>
-            <button class="js-toggle-pub add-link" data-id="{{ p.id }}"
-              style="border:0;font-size:14px;color:{{ 'var(--glow)' if p.published else 'var(--muted)' }}"
-              title="Нажмите, чтобы {{ 'снять с публикации' if p.published else 'опубликовать' }}">
+            <button class="js-toggle-pub" data-id="{{ p.id }}"
+              title="Нажмите, чтобы {{ 'снять с публикации' if p.published else 'опубликовать' }}"
+              style="border:1px solid {{ 'var(--glow)' if p.published else 'var(--border2)' }};color:{{ 'var(--glow)' if p.published else 'var(--muted)' }};background:{{ 'var(--glow-soft)' if p.published else 'transparent' }};border-radius:20px;padding:3px 10px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:.15s">
               {{ 'опубликован' if p.published else 'скрыт' }}
             </button>
           </td>
