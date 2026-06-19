@@ -32,7 +32,7 @@ app.config['UPLOAD_FOLDER'] = os.path.join(app.static_folder, 'uploads')
 
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
-login_manager.login_view = 'admin_login'
+login_manager.login_view = 'login'
 login_manager.login_message = 'Войдите, чтобы открыть админку.'
 
 # ==================== МОДЕЛИ ====================
@@ -363,22 +363,11 @@ def privacy():
 
 # ==================== АДМИНКА ====================
 
-@app.route('/admin/login', methods=['GET', 'POST'])
-def admin_login():
-    if request.method == 'POST':
-        u = User.query.filter_by(username=request.form.get('username')).first()
-        if u and u.check_password(request.form.get('password', '')):
-            login_user(u)
-            return redirect(url_for('admin'))
-        flash('Неверный логин или пароль', 'error')
-    return render_template('admin/login.html')
-
-
 @app.route('/admin/logout')
 @login_required
 def admin_logout():
     logout_user()
-    return redirect(url_for('admin_login'))
+    return redirect(url_for('login'))
 
 
 @app.route('/admin')
