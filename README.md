@@ -16,7 +16,7 @@ python scripts/fetch_assets.py       # один раз: качает реаль�
 python app.py                        # http://localhost:5000
 ```
 - Сайт: http://localhost:5000
-- Админка: http://localhost:5000/admin/login — логин/пароль из `.env` (по умолчанию `admin` / `admin123`)
+- Админка: http://localhost:5000/admin/login — логин/пароль из `.env` (по умолчанию `admin` / `Admin2024!`)
 - БД и тестовые данные (7 товаров, демо-заявка, админ) создаются сами при первом запуске.
 - Без `fetch_assets.py` сайт работает с картинками-заглушками.
 
