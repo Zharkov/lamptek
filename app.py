@@ -11,15 +11,23 @@ from datetime import datetime
 from email.mime.text import MIMEText
 
 from flask import (Flask, render_template, request, redirect, url_for, flash,
-                   jsonify, session, abort)
+                   jsonify, session, abort, Response)
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import (LoginManager, UserMixin, login_user, logout_user,
                          login_required, current_user)
+from flask_wtf import CSRFProtect
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
+from PIL import Image
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'change-me-in-production')
+_DEFAULT_SECRET_KEY = 'change-me-in-production'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', _DEFAULT_SECRET_KEY)
+if app.config['SECRET_KEY'] == _DEFAULT_SECRET_KEY:
+    app.logger.warning(
+        'ВНИМАНИЕ: используется дефолтный SECRET_KEY. Установите переменную '
+        'окружения SECRET_KEY перед запуском в продакшене!')
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 _db_url = os.environ.get('DATABASE_URL', 'sqlite:///lamptek.db')
 # Render передаёт postgres://, переводим в postgresql+psycopg:// (psycopg3)
 if _db_url.startswith('postgres://'):
@@ -29,11 +37,13 @@ elif _db_url.startswith('postgresql://'):
 app.config['SQLALCHEMY_DATABASE_URI'] = _db_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = os.path.join(app.static_folder, 'uploads')
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10 МБ на запрос
 
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message = 'Войдите, чтобы открыть админку.'
+csrf = CSRFProtect(app)
 
 # ==================== МОДЕЛИ ====================
 
@@ -147,9 +157,7 @@ def get_current_customer():
 
 @app.context_processor
 def inject_nav():
-    cats = Category.query.filter_by(parent_id=None).order_by(Category.sort_order).all()
-    return dict(nav_categories=cats, now_year=datetime.now().year,
-                current_customer=get_current_customer())
+    return dict(now_year=datetime.now().year, current_customer=get_current_customer())
 
 
 # ==================== УВЕДОМЛЕНИЯ ====================
@@ -244,6 +252,7 @@ def cart():
 
 
 @app.route('/lead', methods=['POST'])
+@csrf.exempt  # публичная анонимная форма — CSRF не защищает привилегированную сессию
 def lead():
     data = request.get_json(silent=True) or request.form
     name = (data.get('name') or '').strip()
@@ -359,6 +368,26 @@ def contacts():
 @app.route('/privacy')
 def privacy():
     return render_template('privacy.html')
+
+
+@app.route('/robots.txt')
+def robots_txt():
+    text = 'User-agent: *\nDisallow: /admin\nDisallow: /profile\nDisallow: /cart\n\nSitemap: {}\n'.format(
+        url_for('sitemap_xml', _external=True))
+    return Response(text, mimetype='text/plain')
+
+
+@app.route('/sitemap.xml')
+def sitemap_xml():
+    urls = [url_for('index', _external=True), url_for('catalog', _external=True),
+            url_for('about', _external=True), url_for('contacts', _external=True)]
+    for c in Category.query.all():
+        urls.append(url_for('category', slug=c.slug, _external=True))
+    for p in Product.query.filter_by(published=True).all():
+        urls.append(url_for('product', slug=p.slug, _external=True))
+    body = ''.join('<url><loc>{}</loc></url>'.format(u) for u in urls)
+    xml = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{}</urlset>'.format(body)
+    return Response(xml, mimetype='application/xml')
 
 
 # ==================== АДМИНКА ====================
@@ -611,12 +640,23 @@ def lead_status(lid):
     return jsonify(ok=True)
 
 
+ALLOWED_UPLOAD_EXT = {'.jpg', '.jpeg', '.png', '.webp', '.gif'}
+
+
 @app.route('/admin/upload', methods=['POST'])
 @admin_required
 def admin_upload():
     f = request.files.get('file')
-    if not f:
+    if not f or not f.filename:
         return jsonify(error='Нет файла'), 400
+    ext = os.path.splitext(f.filename)[1].lower()
+    if ext not in ALLOWED_UPLOAD_EXT:
+        return jsonify(error='Разрешены только изображения: jpg, jpeg, png, webp, gif'), 400
+    try:
+        Image.open(f.stream).verify()
+        f.stream.seek(0)
+    except Exception:
+        return jsonify(error='Файл повреждён или не является изображением'), 400
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     name = '{}-{}'.format(int(datetime.utcnow().timestamp()), secure_filename(f.filename))
     f.save(os.path.join(app.config['UPLOAD_FOLDER'], name))
@@ -633,8 +673,13 @@ def e404(e):
 def init_db():
     db.create_all()
     if User.query.first() is None:
+        admin_password = os.environ.get('ADMIN_PASSWORD', 'admin123')
+        if admin_password == 'admin123':
+            app.logger.warning(
+                'ВНИМАНИЕ: используется дефолтный пароль администратора (admin123). '
+                'Установите переменную окружения ADMIN_PASSWORD перед запуском в продакшене!')
         admin_user = User(username=os.environ.get('ADMIN_LOGIN', 'admin'), role='admin')
-        admin_user.set_password(os.environ.get('ADMIN_PASSWORD', 'admin123'))
+        admin_user.set_password(admin_password)
         db.session.add(admin_user)
     if Category.query.first() is None:
         seed_catalog()

@@ -15,21 +15,21 @@
 
   <div class="grid grid--3 mt32" style="gap:16px">
     <a href="{{ url_for('admin_customers') }}" class="card" style="text-decoration:none;display:flex;align-items:center;gap:20px;padding:20px">
-      <div style="font-size:36px;font-family:Unbounded;font-weight:800;color:var(--glow);line-height:1">{{ customers_count }}</div>
+      <div class="stat-figure">{{ customers_count }}</div>
       <div>
         <div style="font-weight:600;font-size:15px">Пользователи</div>
         <div class="muted" style="font-size:13px;margin-top:2px">Перейти в раздел →</div>
       </div>
     </a>
     <div class="card" style="display:flex;align-items:center;gap:20px;padding:20px">
-      <div style="font-size:36px;font-family:Unbounded;font-weight:800;color:var(--glow);line-height:1">{{ leads|selectattr('status','eq','new')|list|length }}</div>
+      <div class="stat-figure">{{ leads|selectattr('status','eq','new')|list|length }}</div>
       <div>
         <div style="font-weight:600;font-size:15px">Новые заявки</div>
         <div class="muted" style="font-size:13px;margin-top:2px">в работе: {{ leads|selectattr('status','eq','called')|list|length }}</div>
       </div>
     </div>
     <div class="card" style="display:flex;align-items:center;gap:20px;padding:20px">
-      <div style="font-size:36px;font-family:Unbounded;font-weight:800;color:var(--glow);line-height:1">{{ products|length }}</div>
+      <div class="stat-figure">{{ products|length }}</div>
       <div>
         <div style="font-weight:600;font-size:15px">Товары</div>
         <div class="muted" style="font-size:13px;margin-top:2px">категорий: {{ categories|length }}</div>
@@ -53,7 +53,7 @@
         <span class="lead__dot dot-{{ l.status }}"></span>
         <div>
           <span style="font-weight:600">{{ l.name }}</span>
-          <span class="mono" style="color:var(--glow);margin-left:12px">{{ l.phone }}</span>
+          <span class="mono" style="color:var(--glow-text);margin-left:12px">{{ l.phone }}</span>
           {% if l.comment %}<div class="muted" style="font-size:14px;max-width:60ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ l.comment }}</div>{% endif %}
         </div>
       </div>
@@ -86,8 +86,8 @@
           <td class="muted">{{ c.parent.title if c.parent else '—' }}</td>
           <td class="muted">{{ c.products|length }}</td>
           <td style="text-align:right;white-space:nowrap">
-            <a href="{{ url_for('category_edit', cid=c.id) }}" style="color:var(--glow)">Изменить</a>
-            <form method="post" action="{{ url_for('category_delete', cid=c.id) }}" style="display:inline;margin-left:12px" onsubmit="return confirm('Удалить категорию?')"><button class="add-link" style="border:0;color:var(--muted)">Удалить</button></form>
+            <a href="{{ url_for('category_edit', cid=c.id) }}" style="color:var(--glow-text)">Изменить</a>
+            <form method="post" action="{{ url_for('category_delete', cid=c.id) }}" style="display:inline;margin-left:12px" onsubmit="return confirm('Удалить категорию?')"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="add-link" style="border:0;color:var(--muted)">Удалить</button></form>
           </td>
         </tr>
         {% endfor %}
@@ -113,13 +113,13 @@
           <td>
             <button class="js-toggle-pub" data-id="{{ p.id }}"
               title="Нажмите, чтобы {{ 'снять с публикации' if p.published else 'опубликовать' }}"
-              style="border:1px solid {{ 'var(--glow)' if p.published else 'var(--border2)' }};color:{{ 'var(--glow)' if p.published else 'var(--muted)' }};background:{{ 'var(--glow-soft)' if p.published else 'transparent' }};border-radius:20px;padding:3px 10px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:.15s">
+              style="border:1px solid {{ 'var(--glow)' if p.published else 'var(--border2)' }};color:{{ 'var(--glow-text)' if p.published else 'var(--muted)' }};background:{{ 'var(--glow-soft)' if p.published else 'transparent' }};border-radius:20px;padding:3px 10px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:.15s">
               {{ 'опубликован' if p.published else 'скрыт' }}
             </button>
           </td>
           <td style="text-align:right;white-space:nowrap">
-            <a href="{{ url_for('product_edit', pid=p.id) }}" style="color:var(--glow)">Изменить</a>
-            <form method="post" action="{{ url_for('product_delete', pid=p.id) }}" style="display:inline;margin-left:12px" onsubmit="return confirm('Удалить товар?')"><button class="add-link" style="border:0;color:var(--muted)">Удалить</button></form>
+            <a href="{{ url_for('product_edit', pid=p.id) }}" style="color:var(--glow-text)">Изменить</a>
+            <form method="post" action="{{ url_for('product_delete', pid=p.id) }}" style="display:inline;margin-left:12px" onsubmit="return confirm('Удалить товар?')"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="add-link" style="border:0;color:var(--muted)">Удалить</button></form>
           </td>
         </tr>
         {% endfor %}

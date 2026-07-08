@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}{{ cat.title }} — LampTek{% endblock %}
+{% block meta_description %}{{ cat.title }} — светодиодные светильники LampTek. Характеристики, чертежи, ориентировочные цены, расчёт проекта.{% endblock %}
 {% block content %}
 <div class="container section">
   <a href="{{ url_for('catalog') }}" class="muted" style="font-size:14px">← Каталог</a>

@@ -1,4 +1,13 @@
 (function () {
+  var csrfMeta = document.querySelector('meta[name="csrf-token"]');
+  var CSRF_TOKEN = csrfMeta ? csrfMeta.content : '';
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
   // ===== Заявки: окно =====
   var modal = document.getElementById('lead-modal');
   if (modal) {
@@ -12,7 +21,7 @@
         if (d.email) { document.getElementById('m-email').textContent = d.email; er.style.display = ''; } else er.style.display = 'none';
         var items = []; try { items = JSON.parse(d.items || '[]'); } catch (e) {}
         var iw = document.getElementById('m-items-wrap');
-        if (items.length) { iw.style.display = ''; document.getElementById('m-items').innerHTML = items.map(function (i) { return '<li class="between" style="border-bottom:1px solid var(--border);padding-bottom:4px"><span>' + i.title + '</span><span class="mono muted">' + i.qty + ' шт.</span></li>'; }).join(''); }
+        if (items.length) { iw.style.display = ''; document.getElementById('m-items').innerHTML = items.map(function (i) { return '<li class="between" style="border-bottom:1px solid var(--border);padding-bottom:4px"><span>' + esc(i.title) + '</span><span class="mono muted">' + esc(i.qty) + ' шт.</span></li>'; }).join(''); }
         else iw.style.display = 'none';
         var cw = document.getElementById('m-comment-wrap');
         if (d.comment) { cw.style.display = ''; document.getElementById('m-comment').textContent = d.comment; } else cw.style.display = 'none';
@@ -30,7 +39,7 @@
       var card = sel.closest('.card');
       var dot = card && card.querySelector('.lead__dot');
       fetch('/admin/leads/' + sel.dataset.id + '/status', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
         body: JSON.stringify({ status: sel.value })
       }).then(function () {
         // Обновить цвет точки
@@ -58,11 +67,11 @@
   // ===== Переключение публикации товара =====
   document.querySelectorAll('.js-toggle-pub').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      fetch('/admin/products/' + btn.dataset.id + '/toggle', { method: 'POST' })
+      fetch('/admin/products/' + btn.dataset.id + '/toggle', { method: 'POST', headers: { 'X-CSRFToken': CSRF_TOKEN } })
         .then(function (r) { return r.json(); })
         .then(function (j) {
           btn.textContent = j.published ? 'опубликован' : 'скрыт';
-          btn.style.color = j.published ? 'var(--glow)' : 'var(--muted)';
+          btn.style.color = j.published ? 'var(--glow-text)' : 'var(--muted)';
           btn.style.borderColor = j.published ? 'var(--glow)' : 'var(--border2)';
           btn.style.background = j.published ? 'var(--glow-soft)' : 'transparent';
           btn.title = j.published ? 'Нажмите, чтобы снять с публикации' : 'Нажмите, чтобы опубликовать';
@@ -76,7 +85,7 @@
     inp.addEventListener('blur', function () {
       if (inp.value === prev) return; prev = inp.value;
       fetch('/admin/products/' + inp.dataset.id + '/sort', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
         body: JSON.stringify({ sort_order: parseInt(inp.value) || 0 })
       });
     });
@@ -97,7 +106,7 @@
   // ===== Загрузка изображений (главное / галерея / чертежи) =====
   function uploadFile(file, cb) {
     var fd = new FormData(); fd.append('file', file);
-    fetch('/admin/upload', { method: 'POST', body: fd }).then(function (r) { return r.json(); }).then(function (j) { if (j.url) cb(j.url); });
+    fetch('/admin/upload', { method: 'POST', headers: { 'X-CSRFToken': CSRF_TOKEN }, body: fd }).then(function (r) { return r.json(); }).then(function (j) { if (j.url) cb(j.url); });
   }
 
   var galleryJson = document.getElementById('gallery_json');

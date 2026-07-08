@@ -3,7 +3,26 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}LampTek — светодиодное освещение{% endblock %}</title>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>{% block title %}Светодиодное освещение — LampTek{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}Производство светодиодных светильников LampTek: уличное, промышленное и офисное освещение. Подбор решения под объект, расчёт проекта, поставка.{% endblock %}">
+  <link rel="canonical" href="{{ request.base_url }}">
+  <meta property="og:site_name" content="LampTek">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ request.base_url }}">
+  <meta property="og:title" content="{{ self.title() }}">
+  <meta property="og:description" content="{{ self.meta_description() }}">
+  <meta property="og:image" content="{% block og_image %}{{ url_for('static', filename='products/zenith-180.jpg', _external=True) }}{% endblock %}">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Organization","name":"LampTek",
+   "url":"{{ url_for('index', _external=True) }}",
+   "logo":"{{ url_for('static', filename='favicon.svg', _external=True) }}",
+   "telephone":"+7-900-226-30-13","email":"info@lamptek.ru",
+   "address":{"@type":"PostalAddress","addressLocality":"Смоленск","addressCountry":"RU"}}
+  </script>
+  {% block structured_data %}{% endblock %}
   <script>(function(){try{var t=localStorage.getItem('lt_theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,7 +47,7 @@
         {{ _person_icon }} {{ current_user.username }}
       </a>
       {% elif current_customer %}
-      <a href="{{ url_for('profile') }}" class="btn btn--ghost btn--sm" style="gap:6px;border-color:var(--glow);color:var(--glow)">
+      <a href="{{ url_for('profile') }}" class="btn btn--ghost btn--sm" style="gap:6px;border-color:var(--glow);color:var(--glow-text)">
         {{ _person_icon }} {{ current_customer.name }}
       </a>
       {% else %}

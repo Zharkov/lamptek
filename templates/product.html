@@ -1,5 +1,18 @@
 {% extends 'base.html' %}
 {% block title %}{{ p.title }} — LampTek{% endblock %}
+{% block meta_description %}{{ p.short_desc or (p.title ~ ' — светодиодный светильник LampTek. Характеристики, чертежи, ориентировочная цена.') }}{% endblock %}
+{% block og_image %}{{ request.url_root.rstrip('/') + p.main_image if p.main_image else (request.url_root.rstrip('/') + '/static/products/zenith-180.jpg') }}{% endblock %}
+{% block structured_data %}
+{% set ld = {
+  '@context': 'https://schema.org', '@type': 'Product',
+  'name': p.title, 'sku': p.slug,
+  'description': p.short_desc or p.title,
+  'image': self.og_image(),
+  'category': p.category.title,
+  'offers': ({'@type': 'Offer', 'priceCurrency': 'RUB', 'price': p.price, 'availability': 'https://schema.org/InStock'} if (p.price and not p.price_on_request) else {'@type': 'Offer', 'availability': 'https://schema.org/InStock'})
+} %}
+<script type="application/ld+json">{{ ld | tojson }}</script>
+{% endblock %}
 {% block content %}
 {% set specs = p.specs_json | fromjson %}
 {% set features = p.features_json | fromjson %}
@@ -19,14 +32,14 @@
           <img id="prod-main-img" src="{{ p.main_image }}" alt="{{ p.title }}">
         </div>
         {% if gallery %}
-        <button class="slider__arrow prod-prev" type="button">&#8249;</button>
-        <button class="slider__arrow prod-next" type="button">&#8250;</button>
+        <button class="slider__arrow prod-prev" type="button" aria-label="Предыдущее фото">&#8249;</button>
+        <button class="slider__arrow prod-next" type="button" aria-label="Следующее фото">&#8250;</button>
         {% endif %}
       </div>
       {% if gallery %}
       <div class="thumbs" style="margin-top:12px">
         {% for img in all_imgs %}
-        <div class="card thumb{% if loop.first %} active{% endif %}" data-src="{{ img }}"><img src="{{ img }}" alt=""></div>
+        <div class="card thumb{% if loop.first %} active{% endif %}" data-src="{{ img }}"><img src="{{ img }}" alt="" loading="lazy"></div>
         {% endfor %}
       </div>
       {% endif %}
@@ -83,7 +96,7 @@
     <div class="draw-grid">
       {% for d in drawings %}
       <div class="card draw"><figure>
-        <div class="draw__img" data-zoom="{{ d.url }}" data-cap="{{ d.caption }}"><img src="{{ d.url }}" alt="{{ d.caption }}"></div>
+        <div class="draw__img" data-zoom="{{ d.url }}" data-cap="{{ d.caption }}"><img src="{{ d.url }}" alt="{{ d.caption }}" loading="lazy"></div>
         {% if d.caption %}<figcaption>{{ d.caption }}</figcaption>{% endif %}
       </figure></div>
       {% endfor %}

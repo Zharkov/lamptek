@@ -28,7 +28,7 @@
         <ellipse cx="160" cy="72" rx="30" ry="5" fill="#fff" opacity=".85"/>
       </svg>
       <div class="temp card">
-        <div class="temp__row"><span class="muted">Цветовая температура</span><span id="temp-val" style="color:var(--glow)">4000 K</span></div>
+        <div class="temp__row"><span class="muted">Цветовая температура</span><span id="temp-val" style="color:var(--glow-text)">4000 K</span></div>
         <input id="temp-slider" type="range" min="2700" max="5000" step="100" value="4000" aria-label="Цветовая температура">
         <div class="temp__scale"><span>2700K · тёплый</span><span>4000K</span><span>5000K · холодный</span></div>
       </div>
@@ -50,7 +50,7 @@
 
 <section class="section">
   <div class="container">
-    <div class="between" style="margin-bottom:24px"><h2>Рекомендуем</h2><a href="{{ url_for('catalog') }}" style="color:var(--glow);font-size:14px">Весь каталог →</a></div>
+    <div class="between" style="margin-bottom:24px"><h2>Рекомендуем</h2><a href="{{ url_for('catalog') }}" style="color:var(--glow-text);font-size:14px">Весь каталог →</a></div>
     <div class="grid grid--4">{% for p in featured %}{% include '_card.html' %}{% endfor %}</div>
   </div>
 </section>

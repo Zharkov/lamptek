@@ -11,12 +11,14 @@
       <p class="muted" style="font-size:13px">Зарегистрирован {{ c.created_at.strftime('%d.%m.%Y в %H:%M') }}</p>
     </div>
     <form method="post" onsubmit="return confirm('Удалить клиента безвозвратно?')">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <input type="hidden" name="action" value="delete">
       <button class="btn btn--ghost btn--sm" style="border-color:#e05;color:#e05" type="submit">Удалить клиента</button>
     </form>
   </div>
 
   <form method="post" class="card mt24" style="display:grid;gap:16px;padding:24px">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <input type="hidden" name="action" value="edit">
     <div class="grid grid--2">
       <div>

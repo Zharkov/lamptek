@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm -f instance/lamptek.db)",
+      "Bash(python app.py)"
+    ]
+  }
+}

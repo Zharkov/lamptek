@@ -6,19 +6,22 @@
   --bg: #0B0E14; --surface: #0E1117; --surface2: #161B22;
   --border: #1F2630; --border2: #2C3543;
   --text: #F2F4F8; --muted: #9AA4B2;
-  --glow: #FFB347; --glow-soft: rgba(255,179,71,.18); --beam: #5FA8FF;
+  --glow: #FFB347; --glow-text: #FFB347; --glow-soft: rgba(255,179,71,.18); --beam: #5FA8FF;
   --halo: rgba(255,179,71,.10);
 }
 [data-theme="light"] {
   --bg: #F4F6F9; --surface: #FFFFFF; --surface2: #EDF0F4;
   --border: #DDE2E9; --border2: #C7CFD9;
   --text: #12171F; --muted: #5A6573;
-  --glow: #D67A16; --glow-soft: rgba(214,122,22,.14); --beam: #256EDC;
+  --glow: #D67A16; --glow-text: #A85400; --glow-soft: rgba(214,122,22,.14); --beam: #256EDC;
   --halo: rgba(255,179,71,.14);
 }
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline: 2px solid var(--glow); outline-offset: 2px;
+}
 body {
   margin: 0; background: var(--bg); color: var(--text);
   font-family: "Manrope", system-ui, sans-serif; line-height: 1.5;
@@ -32,17 +35,17 @@ img { max-width: 100%; display: block; }
 .muted { color: var(--muted); }
 .mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
 h1,h2,h3 { font-family: "Unbounded", sans-serif; font-weight: 800; line-height: 1.1; }
-.eyebrow { font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--glow); }
+.eyebrow { font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--glow-text); }
 
 /* ===== Кнопки ===== */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 8px; padding: 12px 20px; font-weight: 600; cursor: pointer; border: 1px solid transparent; font-size: 15px; transition: .15s; }
 .btn--glow { background: var(--glow); color: #0B0E14; }
 .btn--glow:hover { filter: brightness(1.1); }
 .btn--ghost { border-color: var(--border2); color: var(--text); background: transparent; }
-.btn--ghost:hover { border-color: var(--glow); color: var(--glow); }
+.btn--ghost:hover { border-color: var(--glow); color: var(--glow-text); }
 .btn--sm { padding: 8px 14px; font-size: 14px; }
 .icon-btn { width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border2); border-radius: 8px; background: transparent; color: var(--muted); cursor: pointer; font-size: 16px; }
-.icon-btn:hover { border-color: var(--glow); color: var(--glow); }
+.icon-btn:hover { border-color: var(--glow); color: var(--glow-text); }
 .badge { background: var(--glow); color: #0B0E14; border-radius: 5px; padding: 0 6px; font-size: 12px; font-weight: 700; margin-left: 6px; }
 
 /* ===== Шапка ===== */
@@ -63,8 +66,9 @@ h1,h2,h3 { font-family: "Unbounded", sans-serif; font-weight: 800; line-height: 
 /* ===== Сетки ===== */
 .grid { display: grid; gap: 16px; }
 .grid--4 { grid-template-columns: repeat(4, 1fr); }
+.grid--3 { grid-template-columns: repeat(3, 1fr); }
 .grid--2 { grid-template-columns: repeat(2, 1fr); }
-@media (max-width: 860px) { .grid--4 { grid-template-columns: repeat(2, 1fr); } .grid--2 { grid-template-columns: 1fr; } }
+@media (max-width: 860px) { .grid--4, .grid--3 { grid-template-columns: repeat(2, 1fr); } .grid--2 { grid-template-columns: 1fr; } }
 
 /* ===== Карточка товара ===== */
 .product-card { padding: 16px; display: flex; flex-direction: column; }
@@ -87,19 +91,19 @@ h1,h2,h3 { font-family: "Unbounded", sans-serif; font-weight: 800; line-height: 
 /* Степпер количества */
 .stepper { display: inline-flex; align-items: center; border: 1px solid var(--border2); border-radius: 8px; }
 .stepper--glow { border-color: color-mix(in srgb, var(--glow) 50%, transparent); }
-.stepper button { background: transparent; border: 0; color: var(--glow); cursor: pointer; padding: 6px 12px; font-size: 16px; }
+.stepper button { background: transparent; border: 0; color: var(--glow-text); cursor: pointer; padding: 6px 12px; font-size: 16px; }
 .stepper .qty { min-width: 28px; text-align: center; font-family: "JetBrains Mono", monospace; }
 .add-link { background: transparent; border: 1px solid var(--border2); color: var(--text); border-radius: 8px; padding: 6px 12px; font-size: 14px; cursor: pointer; }
-.add-link:hover { border-color: var(--glow); color: var(--glow); }
+.add-link:hover { border-color: var(--glow); color: var(--glow-text); }
 .back-link { color: var(--muted); white-space: nowrap; }
-.back-link:hover { color: var(--glow); }
+.back-link:hover { color: var(--glow-text); }
 
 /* ===== Hero ===== */
 .hero { padding-top: 80px; padding-bottom: 80px; }
 .hero__grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 48px; align-items: center; }
 @media (max-width: 860px) { .hero { padding-top: 48px; padding-bottom: 48px; } .hero__grid { grid-template-columns: 1fr; } }
 .hero h1 { font-size: clamp(34px, 6vw, 60px); margin: 16px 0; }
-.hero .accent { color: var(--glow); }
+.hero .accent { color: var(--glow-text); }
 
 /* Цветовая температура */
 .lamp { position: relative; }
@@ -112,7 +116,6 @@ h1,h2,h3 { font-family: "Unbounded", sans-serif; font-weight: 800; line-height: 
 /* ===== Доверие ===== */
 .trust { padding-top: 64px; padding-bottom: 64px; }
 .client { display: flex; align-items: center; gap: 12px; padding: 20px; }
-.client__mark { width: 44px; height: 44px; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); background: var(--bg); border-radius: 10px; font-family: "Unbounded", sans-serif; font-weight: 700; color: var(--glow); font-size: 14px; }
 .client__logo { width: 44px; height: 44px; flex: 0 0 auto; object-fit: contain; border-radius: 10px; background: #fff; padding: 4px; }
 
 /* ===== Характеристики ===== */
@@ -154,7 +157,7 @@ h1,h2,h3 { font-family: "Unbounded", sans-serif; font-weight: 800; line-height: 
 label.lbl { display: block; font-size: 14px; color: var(--muted); margin-bottom: 4px; }
 .alert { border-radius: 8px; padding: 10px 14px; margin-top: 12px; font-size: 14px; }
 .alert--error { background: rgba(255,80,80,.12); color: #ff8585; }
-.alert--success { background: var(--glow-soft); color: var(--glow); }
+.alert--success { background: var(--glow-soft); color: var(--glow-text); }
 .flashes { margin-top: 16px; }
 
 /* ===== Таблица админки ===== */
@@ -175,7 +178,8 @@ label.lbl { display: block; font-size: 14px; color: var(--muted); margin-bottom:
 /* ===== Утилиты ===== */
 .section { padding-top: 56px; padding-bottom: 56px; }
 .stat { padding: 20px; }
-.stat__v { font-family: "Unbounded", sans-serif; font-weight: 800; font-size: 24px; color: var(--glow); }
+.stat__v { font-family: "Unbounded", sans-serif; font-weight: 800; font-size: 24px; color: var(--glow-text); }
+.stat-figure { font-family: "Unbounded", sans-serif; font-weight: 800; font-size: 36px; line-height: 1; color: var(--glow-text); }
 .flex { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .between { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .mt8{margin-top:8px}.mt16{margin-top:16px}.mt24{margin-top:24px}.mt40{margin-top:40px}

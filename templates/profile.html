@@ -27,7 +27,7 @@
     {% for l in leads %}
     {% set items = l.items_json | fromjson %}
     {% set status_label = 'Новая' if l.status=='new' else ('В работе' if l.status=='called' else ('К возврату' if l.status=='return' else 'Закрыта')) %}
-    {% set status_color = 'var(--glow)' if l.status=='new' else ('#4caf50' if l.status=='called' else ('#e67e22' if l.status=='return' else 'var(--muted)')) %}
+    {% set status_color = 'var(--glow-text)' if l.status=='new' else ('#4caf50' if l.status=='called' else ('#e67e22' if l.status=='return' else 'var(--muted)')) %}
     <div class="card" style="padding:20px">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px">
         <div style="font-weight:700;font-size:15px">{{ l.created_at.strftime('%d.%m.%Y') }}</div>

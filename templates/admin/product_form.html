@@ -7,6 +7,7 @@
 <div class="container section" style="max-width:760px">
   <h1 style="font-size:20px">{{ 'Редактирование: ' + p.title if p else 'Новый товар' }}</h1>
   <form method="post" class="mt24" style="display:grid;gap:18px" id="prod-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div><label class="lbl">Название *</label><input class="field" name="title" value="{{ p.title if p else (form.title if form else '') }}"></div>
     <div class="grid grid--2">
       <div><label class="lbl">Slug (адрес) *</label><input class="field mono" name="slug" placeholder="lamptek-zenith-200w" value="{{ p.slug if p else (form.slug if form else '') }}"></div>
@@ -42,7 +43,7 @@
         <div class="flex js-spec" style="flex-wrap:nowrap"><input class="field" name="spec_label" value="{{ s.label }}" placeholder="Параметр"><input class="field mono" name="spec_value" value="{{ s.value }}" placeholder="Значение"><button type="button" class="add-link js-spec-del">✕</button></div>
         {% endfor %}
       </div>
-      <button type="button" id="add-spec" class="add-link" style="margin-top:8px;border:0;color:var(--glow)">+ Добавить характеристику</button>
+      <button type="button" id="add-spec" class="add-link" style="margin-top:8px;border:0;color:var(--glow-text)">+ Добавить характеристику</button>
     </div>
 
     <div><label class="lbl">Особенности (по одной на строку)</label><textarea class="field" name="features" rows="4">{{ (p.features_json | fromjson) | join('\n') if p else '' }}</textarea></div>

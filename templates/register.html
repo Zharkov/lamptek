@@ -5,30 +5,31 @@
   <div class="eyebrow">Новый аккаунт</div>
   <h1 style="font-size:26px;margin-top:8px">Регистрация</h1>
   <form method="post" class="mt24" style="display:grid;gap:16px">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div>
-      <label class="lbl">Имя *</label>
-      <input class="field" name="name" placeholder="Иван Иванов" value="{{ form.name if form else '' }}" required>
+      <label class="lbl" for="reg-name">Имя *</label>
+      <input class="field" id="reg-name" name="name" placeholder="Иван Иванов" value="{{ form.name if form else '' }}" required>
     </div>
     <div>
-      <label class="lbl">Email *</label>
-      <input class="field" type="email" name="email" placeholder="ivan@example.com" value="{{ form.email if form else '' }}" required>
+      <label class="lbl" for="reg-email">Email *</label>
+      <input class="field" id="reg-email" type="email" name="email" placeholder="ivan@example.com" value="{{ form.email if form else '' }}" required>
     </div>
     <div>
-      <label class="lbl">Телефон</label>
-      <input class="field" type="tel" name="phone" placeholder="+7 (900) 000-00-00" value="{{ form.phone if form else '' }}">
+      <label class="lbl" for="reg-phone">Телефон</label>
+      <input class="field" id="reg-phone" type="tel" name="phone" placeholder="+7 (900) 000-00-00" value="{{ form.phone if form else '' }}">
     </div>
     <div>
-      <label class="lbl">Пароль * <span class="muted" style="font-size:12px">минимум 6 символов</span></label>
-      <input class="field" type="password" name="password" required>
+      <label class="lbl" for="reg-password">Пароль * <span class="muted" style="font-size:12px">минимум 6 символов</span></label>
+      <input class="field" id="reg-password" type="password" name="password" required>
     </div>
     <div>
-      <label class="lbl">Повторите пароль *</label>
-      <input class="field" type="password" name="password2" required>
+      <label class="lbl" for="reg-password2">Повторите пароль *</label>
+      <input class="field" id="reg-password2" type="password" name="password2" required>
     </div>
     <button class="btn btn--glow" type="submit" style="width:100%">Зарегистрироваться</button>
   </form>
   <p class="muted mt16" style="font-size:14px;text-align:center">
-    Уже есть аккаунт? <a href="{{ url_for('login') }}" style="color:var(--glow)">Войти</a>
+    Уже есть аккаунт? <a href="{{ url_for('login') }}" style="color:var(--glow-text)">Войти</a>
   </p>
 </div>
 {% endblock %}

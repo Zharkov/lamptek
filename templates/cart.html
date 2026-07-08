@@ -10,13 +10,13 @@
     <div id="cart-items" style="display:grid;gap:12px"></div>
     <form id="lead-form" class="card" style="padding:24px;display:grid;gap:12px">
       <div style="font-family:Unbounded;font-weight:700;font-size:18px">Оставьте контакты — перезвоним</div>
-      <input class="field" name="name" placeholder="Имя *" value="{{ customer.name if customer else '' }}">
-      <input class="field" name="phone" placeholder="Телефон *" value="{{ customer.phone if customer else '' }}">
-      <input class="field" name="email" placeholder="Email" value="{{ customer.email if customer else '' }}">
-      <textarea class="field" name="comment" rows="3" placeholder="Комментарий (объект, задача, объём)"></textarea>
+      <input class="field" name="name" placeholder="Имя *" aria-label="Имя" value="{{ customer.name if customer else '' }}">
+      <input class="field" name="phone" placeholder="Телефон *" aria-label="Телефон" value="{{ customer.phone if customer else '' }}">
+      <input class="field" name="email" placeholder="Email" aria-label="Email" value="{{ customer.email if customer else '' }}">
+      <textarea class="field" name="comment" rows="3" placeholder="Комментарий (объект, задача, объём)" aria-label="Комментарий"></textarea>
       <label class="flex" style="font-size:13px;color:var(--muted);align-items:flex-start;gap:8px">
         <input type="checkbox" name="consent" style="margin-top:3px">
-        <span>Согласен на обработку персональных данных согласно <a href="{{ url_for('privacy') }}" style="color:var(--glow)">политике</a> (152-ФЗ).</span>
+        <span>Согласен на обработку персональных данных согласно <a href="{{ url_for('privacy') }}" style="color:var(--glow-text)">политике</a> (152-ФЗ).</span>
       </label>
       <div id="lead-note"></div>
       <button class="btn btn--glow" type="submit">Отправить заявку</button>

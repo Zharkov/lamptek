@@ -4,6 +4,7 @@
 <div class="container section" style="max-width:560px">
   <h1 style="font-size:20px">{{ 'Редактирование: ' + c.title if c else 'Новая категория' }}</h1>
   <form method="post" class="mt24" style="display:grid;gap:18px">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div>
       <label class="lbl">Название *</label>
       <input class="field" name="title" value="{{ c.title if c else (form.title if form else '') }}" required>

@@ -7,8 +7,8 @@
       <img src="{{ img }}" alt="{{ p.title }}" loading="lazy">
       {% endfor %}
       {% if all_imgs|length > 1 %}
-      <button class="slider__arrow slider__prev" type="button">&#8249;</button>
-      <button class="slider__arrow slider__next" type="button">&#8250;</button>
+      <button class="slider__arrow slider__prev" type="button" aria-label="Предыдущее фото">&#8249;</button>
+      <button class="slider__arrow slider__next" type="button" aria-label="Следующее фото">&#8250;</button>
       <div class="slider__dots">{% for _ in all_imgs %}<span class="slider__dot"></span>{% endfor %}</div>
       {% endif %}
     </div>
@@ -18,6 +18,6 @@
   </a>
   <div class="product-card__foot">
     <span class="cart-control" data-slug="{{ p.slug }}" data-title="{{ p.title }}"></span>
-    <a href="{{ url_for('product', slug=p.slug) }}" style="color:var(--glow);font-size:14px">Подробнее</a>
+    <a href="{{ url_for('product', slug=p.slug) }}" style="color:var(--glow-text);font-size:14px">Подробнее</a>
   </div>
 </div>

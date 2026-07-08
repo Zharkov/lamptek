@@ -8,6 +8,12 @@
   });
 
   // ===== Корзина (localStorage) =====
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
   var KEY = 'lt_cart';
   function read() { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { return []; } }
   function write(items) { localStorage.setItem(KEY, JSON.stringify(items)); render(); }
@@ -58,13 +64,13 @@
     if (box) {
       var items = read();
       if (!items.length) {
-        box.innerHTML = '<div class="card" style="padding:32px;text-align:center" class="muted">Список пуст. <a href="/catalog" style="color:var(--glow)">Перейти в каталог →</a></div>';
+        box.innerHTML = '<div class="card" style="padding:32px;text-align:center" class="muted">Список пуст. <a href="/catalog" style="color:var(--glow-text)">Перейти в каталог →</a></div>';
       } else {
         box.innerHTML = items.map(function (i) {
           return '<div class="card between" style="padding:16px">' +
-            '<a href="/product/' + i.slug + '" style="font-weight:600">' + i.title + '</a>' +
-            '<span class="flex"><span class="stepper"><button data-d="' + i.slug + '">−</button><span class="qty">' + i.qty + '</span><button data-i="' + i.slug + '">+</button></span>' +
-            '<button class="add-link" data-rm="' + i.slug + '">Убрать</button></span></div>';
+            '<a href="/product/' + esc(i.slug) + '" style="font-weight:600">' + esc(i.title) + '</a>' +
+            '<span class="flex"><span class="stepper"><button data-d="' + esc(i.slug) + '">−</button><span class="qty">' + esc(i.qty) + '</span><button data-i="' + esc(i.slug) + '">+</button></span>' +
+            '<button class="add-link" data-rm="' + esc(i.slug) + '">Убрать</button></span></div>';
         }).join('');
         box.querySelectorAll('[data-i]').forEach(function (b) { b.onclick = function () { setQty(b.dataset.i, qtyOf(b.dataset.i) + 1); }; });
         box.querySelectorAll('[data-d]').forEach(function (b) { b.onclick = function () { setQty(b.dataset.d, qtyOf(b.dataset.d) - 1); }; });
@@ -95,7 +101,6 @@
       var k = +slider.value, c = colorFor(k), rgb = 'rgb(' + c.join(',') + ')';
       document.getElementById('temp-val').textContent = k + ' K';
       var lens = document.getElementById('lamp-lens'); if (lens) lens.setAttribute('fill', rgb);
-      var beam = document.getElementById('lamp-beam'); if (beam) beam.style.stopColor = rgb;
       var spot = document.getElementById('lamp-spot'); if (spot) spot.setAttribute('fill', rgb);
       slider.style.accentColor = rgb;
       var b0 = document.getElementById('beam-0'), b1 = document.getElementById('beam-1');
@@ -115,16 +120,18 @@
     var lb = document.createElement('div'); lb.className = 'lightbox';
     lb.innerHTML =
       '<button class="lightbox__close" aria-label="Закрыть">×</button>' +
-      (many ? '<button class="lightbox__arrow lightbox__prev">&#8249;</button>' : '') +
+      (many ? '<button class="lightbox__arrow lightbox__prev" aria-label="Предыдущее фото">&#8249;</button>' : '') +
       '<img src="" alt="">' +
-      (many ? '<button class="lightbox__arrow lightbox__next">&#8250;</button>' : '') +
+      (many ? '<button class="lightbox__arrow lightbox__next" aria-label="Следующее фото">&#8250;</button>' : '') +
       '<div class="lightbox__cap"></div>';
     var lbImg = lb.querySelector('img');
     var lbCap = lb.querySelector('.lightbox__cap');
     function paint() {
       var el = group[idx];
+      var cap = el.getAttribute('data-cap') || '';
       lbImg.src = el.getAttribute('data-zoom');
-      lbCap.textContent = el.getAttribute('data-cap') || '';
+      lbImg.alt = cap;
+      lbCap.textContent = cap;
     }
     paint();
     document.body.appendChild(lb); document.body.style.overflow = 'hidden';
@@ -168,10 +175,14 @@
   var trustTrack = document.querySelector('.trust .grid--4');
   if (trustTrack) {
     var trustPaused = false;
+    var trustVisible = true;
     trustTrack.addEventListener('touchstart', function () { trustPaused = true; }, { passive: true });
     trustTrack.addEventListener('touchend', function () { setTimeout(function () { trustPaused = false; }, 1500); }, { passive: true });
+    if (window.IntersectionObserver) {
+      new IntersectionObserver(function (entries) { trustVisible = entries[0].isIntersecting; }).observe(trustTrack);
+    }
     setInterval(function () {
-      if (trustPaused) return;
+      if (trustPaused || !trustVisible || document.hidden) return;
       var maxScroll = trustTrack.scrollWidth - trustTrack.clientWidth;
       if (maxScroll <= 0) return; // не карусель (десктоп)
       var next = trustTrack.scrollLeft + trustTrack.clientWidth * 0.72 + 12;
