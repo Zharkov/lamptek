@@ -20,6 +20,26 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from PIL import Image
 
+
+def _load_dotenv(path):
+    """Мини-загрузчик .env без внешней зависимости. Не перезаписывает уже
+    установленные переменные окружения — так переменные, заданные хостингом/
+    панелью, всегда в приоритете."""
+    if not os.path.exists(path):
+        return
+    with open(path, 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith('#') or '=' not in line:
+                continue
+            key, _, value = line.partition('=')
+            key = key.strip()
+            value = value.strip().strip('"').strip("'")
+            os.environ.setdefault(key, value)
+
+
+_load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env'))
+
 app = Flask(__name__)
 _DEFAULT_SECRET_KEY = 'change-me-in-production'
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', _DEFAULT_SECRET_KEY)
@@ -28,8 +48,12 @@ if app.config['SECRET_KEY'] == _DEFAULT_SECRET_KEY:
         'ВНИМАНИЕ: используется дефолтный SECRET_KEY. Установите переменную '
         'окружения SECRET_KEY перед запуском в продакшене!')
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-_db_url = os.environ.get('DATABASE_URL', 'sqlite:///lamptek.db')
-# Render передаёт postgres://, переводим в postgresql+psycopg:// (psycopg3)
+# Абсолютный путь: под CGI/при запуске не из корня проекта текущая директория
+# процесса не гарантирована, а относительный sqlite:///lamptek.db от неё зависит.
+_default_db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'instance', 'lamptek.db')
+os.makedirs(os.path.dirname(_default_db_path), exist_ok=True)
+_db_url = os.environ.get('DATABASE_URL', 'sqlite:///' + _default_db_path)
+# Render/некоторые хостинги передают postgres://, переводим в psycopg3-схему
 if _db_url.startswith('postgres://'):
     _db_url = _db_url.replace('postgres://', 'postgresql+psycopg://', 1)
 elif _db_url.startswith('postgresql://'):

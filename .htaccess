@@ -1,0 +1,12 @@
+# Прод: домен проксируется на локальный gunicorn (см. gunicorn.conf.py).
+# index.cgi/CGI-вариант оставлен в репозитории как запасной план, если
+# проксирование на этом тарифе окажется недоступно.
+RewriteEngine On
+
+# Статика — напрямую через Apache, в обход Python
+RewriteCond %{REQUEST_URI} ^/static/
+RewriteRule ^ - [L]
+
+# Всё остальное — проксируем на gunicorn
+RewriteRule ^(.*)$ http://127.0.0.1:28936/$1 [P,L]
+ProxyPassReverse / http://127.0.0.1:28936/
